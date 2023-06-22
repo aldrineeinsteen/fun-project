@@ -1,8 +1,11 @@
 package com.aldrineeinsteen.fun.options;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.awt.*;
@@ -13,17 +16,11 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class KeepAliveTimerTest {
 
-    @Mock
-    Robot robot;
-
-    @Mock
-    DisplayModeWrapper displayMode;
+    Robot robot = Mockito.mock(Robot.class);
+    DisplayModeWrapper displayMode = new DisplayModeWrapper(800, 800);
 
     @Test
     public void testRun() {
-        when(displayMode.getWidth()).thenReturn(800);
-        when(displayMode.getHeight()).thenReturn(600);
-
         KeepAliveTimer keepAliveTimer = new KeepAliveTimer(LocalTime.now().plusSeconds(1), robot, displayMode);
         keepAliveTimer.run();
 
