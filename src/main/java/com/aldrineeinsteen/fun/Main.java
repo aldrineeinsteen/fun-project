@@ -1,5 +1,6 @@
 package com.aldrineeinsteen.fun;
 
+import com.aldrineeinsteen.fun.options.DisplayModeWrapper;
 import com.aldrineeinsteen.fun.options.KeepAliveTimer;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ public class Main {
             KeepAliveTimer keepAliveTimer = new KeepAliveTimer(
                     endTime,
                     robot,
-                    displayMode
+                    new DisplayModeWrapper(gd.getDisplayMode())
             );
             Thread keepAliveThread = new Thread(keepAliveTimer);
             keepAliveThread.start();

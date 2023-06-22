@@ -17,7 +17,7 @@ public class KeepAliveTimerTest {
     Robot robot;
 
     @Mock
-    DisplayMode displayMode;
+    DisplayModeWrapper displayMode;
 
     @Test
     public void testRun() {

@@ -9,14 +9,13 @@ import java.time.LocalTime;
 public class KeepAliveTimer implements Runnable {
     private final static Logger logger = LoggerFactory.getLogger(KeepAliveTimer.class);
 
-    // Using a constant for the delay time
     private static final int DELAY_MILLISECONDS = 1000;
 
     private final LocalTime endTime;
     private final Robot robot;
-    private final DisplayMode displayMode;
+    private final DisplayModeWrapper displayMode;
 
-    public KeepAliveTimer(LocalTime endTime, Robot robot, DisplayMode displayMode) {
+    public KeepAliveTimer(LocalTime endTime, Robot robot, DisplayModeWrapper displayMode) {
         this.endTime = endTime;
         this.robot = robot;
         this.displayMode = displayMode;
@@ -32,13 +31,11 @@ public class KeepAliveTimer implements Runnable {
         while (LocalTime.now().isBefore(endTime)) {
             robot.delay(DELAY_MILLISECONDS);
 
-            // Stored pointer info in a variable for reuse
             PointerInfo pointerInfo = MouseInfo.getPointerInfo();
             int xPosition = pointerInfo.getLocation().x;
             int yPosition = pointerInfo.getLocation().y;
 
             if (xPosition < screenWidth && yPosition < screenHeight) {
-                // Toggle between increasing and decreasing by 1 for X and Y position
                 int increment = xPosition % 2 == 0 ? 1 : -1;
                 xPosition += increment;
                 yPosition += increment;
