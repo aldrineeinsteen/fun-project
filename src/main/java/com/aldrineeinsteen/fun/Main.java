@@ -52,7 +52,6 @@ public class Main {
         if (cmd.hasOption("keep-alive")) {
             java.awt.Robot robot = new java.awt.Robot();
             GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-            DisplayMode displayMode = gd.getDisplayMode();
             KeepAliveTimer keepAliveTimer = new KeepAliveTimer(
                     endTime,
                     robot,
