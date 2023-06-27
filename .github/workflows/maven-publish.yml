@@ -1,11 +1,12 @@
-# This workflow will use Maven to build a package and then publish it to GitHub packages when a release is created
+# This workflow will use Maven to build a package and then publish it to GitHub packages when a tag is pushed
 # For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
 
 name: Maven Package and Release
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -25,10 +26,14 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+
       - name: Clean and Build with Maven
         uses: GabrielBB/xvfb-action@v1
         with:
-          run: mvn -B clean package --file pom.xml
+          run: mvn -B versions:set -DnewVersion=${{ steps.get_version.outputs.VERSION }} --file pom.xml clean package
 
       - name: Release with Maven
         run: mvn release:prepare release:perform
