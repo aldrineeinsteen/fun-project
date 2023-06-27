@@ -26,15 +26,6 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
-
-      - name: Clean and Build with Maven
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: mvn -B versions:set -DnewVersion=${{ steps.get_version.outputs.VERSION }} --file pom.xml clean package
-
       - name: Release with Maven
         run: mvn release:prepare release:perform
         env:
