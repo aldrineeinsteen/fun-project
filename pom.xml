@@ -6,7 +6,7 @@
 
     <groupId>com.aldrineeinsteen</groupId>
     <artifactId>fun-project</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.6-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
@@ -92,6 +92,7 @@
                 <configuration>
                     <tagNameFormat>v@{project.version}</tagNameFormat>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <checkModificationExcludeList>settings.xml</checkModificationExcludeList>
                 </configuration>
             </plugin>
         </plugins>
