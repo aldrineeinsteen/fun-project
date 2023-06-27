@@ -4,8 +4,10 @@
 name: Maven Package and Release
 
 on:
-  release:
-    types: [created]
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
@@ -29,11 +31,6 @@ jobs:
         uses: GabrielBB/xvfb-action@v1
         with:
           run: mvn -B clean package --file pom.xml
-
-      - name: Release with Maven
-        run: mvn release:prepare release:perform
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to GitHub Packages Apache Maven
         uses: GabrielBB/xvfb-action@v1
