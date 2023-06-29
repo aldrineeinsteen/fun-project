@@ -25,7 +25,3 @@ replay_pid*
 
 **/.idea/
 **/target/
-
-dependency-reduced-pom.xml
-release.properties
-pom.xml.releaseBackup
