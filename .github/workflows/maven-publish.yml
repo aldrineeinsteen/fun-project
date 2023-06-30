@@ -28,6 +28,10 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
+      - name: Attach HEAD to branch
+        run: |
+          git symbolic-ref HEAD refs/heads/$(git branch --show-current)
+
       - name: Set up Git user
         run: |
           git config --local user.email "action@github.com"
