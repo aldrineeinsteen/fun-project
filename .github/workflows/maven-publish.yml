@@ -29,7 +29,10 @@ jobs:
       - name: Release with Maven
         uses: GabrielBB/xvfb-action@v1
         with:
-          run: mvn release:prepare release:perform -B
+          run: |
+            git config user.email "${GITHUB_ACTOR}"
+            git config user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+            mvn release:prepare release:perform -B
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
