@@ -10,8 +10,8 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.final>1.1.15</version.final>
-        <version.dev>1.1.16-SNAPSHOT</version.dev>
+        <version.final>1.1.16</version.final>
+        <version.dev>1.1.17-SNAPSHOT</version.dev>
     </properties>
 
     <dependencies>

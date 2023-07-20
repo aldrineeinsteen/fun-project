@@ -66,6 +66,10 @@ jobs:
             mvn release:perform -s settings.xml
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
+      - name: Download release.properties for extraction
+        uses: actions/download-artifact@v3
+        with:
+          name: release.properties
       - name: Extract tag
         id: extract_tag
         run: |
