@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.aldrineeinsteen</groupId>
     <artifactId>fun-project</artifactId>
     <version>1.1.24-SNAPSHOT</version>
-    <description>fun-project is a Java-based console application that moves your mouse pointer around your screen to keep the system active till a specified time.
-
-    This is a small project created to explain the whole release management to my children.</description>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.final>1.1.23</version.final>
-        <version.dev>1.1.24-SNAPSHOT</version.dev>
+        <version.final>1.1.24</version.final>
+        <version.dev>1.1.25-SNAPSHOT</version.dev>
     </properties>
+
+    <description>Fun Project :: A Console App
+
+        'fun-project' is a Java-based console application that moves your mouse pointer around your screen to keep the
+        system active till a specified time.
+
+        This is a small project created to explain the whole release management to my children.
+    </description>
 
     <dependencies>
         <dependency>
@@ -52,8 +58,7 @@
         <url>https://github.com/aldrineeinsteen/fun-project</url>
         <connection>scm:git:https://github.com/aldrineeinsteen/fun-project.git</connection>
         <developerConnection>scm:git:https://github.com/aldrineeinsteen/fun-project.git</developerConnection>
-    <tag>v1.0.14</tag>
-  </scm>
+    </scm>
 
     <distributionManagement>
         <repository>
@@ -79,7 +84,8 @@
                         <configuration>
                             <minimizeJar>true</minimizeJar>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>com.aldrineeinsteen.fun.Main</mainClass>
                                 </transformer>
                             </transformers>
