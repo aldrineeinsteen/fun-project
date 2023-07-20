@@ -36,11 +36,4 @@ jobs:
           run: |
             mvn release:prepare release:perform -B
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish to GitHub Packages Apache Maven
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: mvn deploy -s settings.xml
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
