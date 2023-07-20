@@ -4,7 +4,7 @@
 
     <groupId>com.aldrineeinsteen</groupId>
     <artifactId>fun-project</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
@@ -41,8 +41,8 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.final>1.1.1</version.final>
-        <version.dev>1.1.2.SNAPSHOT</version.dev>
+        <version.final>1.1.2</version.final>
+        <version.dev>1.1.3-SNAPSHOT</version.dev>
     </properties>
 
     <scm>
