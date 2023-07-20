@@ -5,13 +5,16 @@
     <groupId>com.aldrineeinsteen</groupId>
     <artifactId>fun-project</artifactId>
     <version>1.1.23-SNAPSHOT</version>
+    <description>fun-project is a Java-based console application that moves your mouse pointer around your screen to keep the system active till a specified time.
+
+    This is a small project created to explain the whole release management to my children.</description>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.final>1.1.22</version.final>
-        <version.dev>1.1.23-SNAPSHOT</version.dev>
+        <version.final>1.1.23</version.final>
+        <version.dev>1.1.24-SNAPSHOT</version.dev>
     </properties>
 
     <dependencies>
