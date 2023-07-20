@@ -89,7 +89,8 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>3.0.1</version>
                 <configuration>
-                    <tagNameFormat>v${version.final}</tagNameFormat>
+                    <tag>v${version.final}</tag>
+                    <releaseVersion>${version.final}</releaseVersion>
                     <developmentVersion>${version.dev}</developmentVersion>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <releaseProfiles>releases</releaseProfiles>
