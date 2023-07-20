@@ -74,7 +74,7 @@ jobs:
         id: extract_tag
         run: |
           TAG=$(grep 'scm.tag=' release.properties | cut -d= -f2)
-          echo "steps_tag=tag::$TAG" >> $GITHUB_OUTPUT
+          echo "steps_tag=$TAG" >> $GITHUB_OUTPUT
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
