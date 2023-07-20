@@ -70,15 +70,15 @@ jobs:
         id: extract_tag
         run: |
           TAG=$(grep 'scm.tag=' release.properties | cut -d= -f2)
-          echo "::set-output name=tag::$TAG"
+          echo "name=tag::$TAG" >> $GITHUB_OUTPUT
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ steps.extract_tag.outputs.tag }}
-          release_name: Release ${{ steps.extract_tag.outputs.tag }}
+          tag_name: ${{ steps.vars.outputs.tag }}
+          release_name: Release ${{ steps.vars.outputs.tag }}
           draft: false
           prerelease: false
       - name: Upload Release Asset
