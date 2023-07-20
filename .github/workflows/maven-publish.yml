@@ -5,8 +5,7 @@ name: Maven Package and Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [ main ]
 
 jobs:
   build:
@@ -25,15 +24,6 @@ jobs:
           distribution: 'temurin'
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
-
-      - name: Attach HEAD to branch
-        run: |
-          git symbolic-ref HEAD refs/heads/$(git branch --show-current)
-
-      - name: Set up Git user
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
 
       - name: Release with Maven
         uses: GabrielBB/xvfb-action@v1
