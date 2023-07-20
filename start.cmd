@@ -2,7 +2,7 @@
 SET jarfile=target\fun-project.jar
 
 SET end_time=%1
-IF "%end_time%"=="" SET end_time=17:30
+IF "%end_time%"=="" SET end_time=17:00
 
 IF EXIST %jarfile% (
     echo Running fun-project.jar
