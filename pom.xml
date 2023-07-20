@@ -4,7 +4,7 @@
 
     <groupId>com.aldrineeinsteen</groupId>
     <artifactId>fun-project</artifactId>
-    <version>1.1.23-SNAPSHOT</version>
+    <version>1.1.24-SNAPSHOT</version>
     <description>fun-project is a Java-based console application that moves your mouse pointer around your screen to keep the system active till a specified time.
 
     This is a small project created to explain the whole release management to my children.</description>
