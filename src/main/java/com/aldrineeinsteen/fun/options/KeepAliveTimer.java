@@ -9,13 +9,19 @@ import java.time.LocalTime;
 public class KeepAliveTimer implements Runnable {
     private final static Logger logger = LoggerFactory.getLogger(KeepAliveTimer.class);
 
-    private static final int DELAY_MILLISECONDS = 1000;
+    //private static final int DELAY_MILLISECONDS = 1000;
+    private final int DELAY_MILLISECONDS;
 
     private final LocalTime endTime;
     private final Robot robot;
     private final DisplayModeWrapper displayMode;
 
     public KeepAliveTimer(LocalTime endTime, Robot robot, DisplayModeWrapper displayMode) {
+        this(30*1000, endTime, robot, displayMode);
+    }
+
+    public KeepAliveTimer(Integer delayMilliseconds, LocalTime endTime, Robot robot, DisplayModeWrapper displayMode) {
+        this.DELAY_MILLISECONDS = delayMilliseconds;
         this.endTime = endTime;
         this.robot = robot;
         this.displayMode = displayMode;
