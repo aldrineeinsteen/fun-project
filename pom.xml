@@ -43,6 +43,8 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.final>1.0.15</version.final>
+        <version.dev>1.0.16.SNAPSHOT</version.dev>
     </properties>
 
     <scm>
@@ -89,8 +91,10 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>3.0.1</version>
                 <configuration>
-                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <tagNameFormat>v@{version.final}</tagNameFormat>
+                    <developmentVersion>@{version.dev}</developmentVersion>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <releaseProfiles>releases</releaseProfiles>
                     <checkModificationExcludeList>settings.xml</checkModificationExcludeList>
                 </configuration>
             </plugin>
