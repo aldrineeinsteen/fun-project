@@ -26,6 +26,10 @@ public class Main {
         keepAliveOption.setRequired(false);
         options.addOption(keepAliveOption);
 
+        Option keepAliveSecondsOption = new Option("s", "seconds", false, "Delay in seconds");
+        keepAliveSecondsOption.setRequired(false);
+        options.addOption(keepAliveSecondsOption);
+
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd;
@@ -39,7 +43,8 @@ public class Main {
             return;
         }
 
-        LocalTime endTime = LocalTime.of(18, 0);  // default end time
+        int seconds = 1;
+        LocalTime endTime = LocalTime.of(17, 0);  // default end time
         if (cmd.hasOption("end-time")) {
             try {
                 endTime = LocalTime.parse(cmd.getOptionValue("end-time"), DateTimeFormatter.ofPattern("HH:mm"));
@@ -52,11 +57,22 @@ public class Main {
         if (cmd.hasOption("keep-alive")) {
             java.awt.Robot robot = new java.awt.Robot();
             GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-            KeepAliveTimer keepAliveTimer = new KeepAliveTimer(
-                    endTime,
-                    robot,
-                    new DisplayModeWrapper(gd.getDisplayMode())
-            );
+            KeepAliveTimer keepAliveTimer;
+            if (cmd.hasOption("seconds")) {
+
+                keepAliveTimer = new KeepAliveTimer(
+                        seconds * 1000,
+                        endTime,
+                        robot,
+                        new DisplayModeWrapper(gd.getDisplayMode())
+                );
+            } else {
+                keepAliveTimer = new KeepAliveTimer(
+                        endTime,
+                        robot,
+                        new DisplayModeWrapper(gd.getDisplayMode())
+                );
+            }
             Thread keepAliveThread = new Thread(keepAliveTimer);
             keepAliveThread.start();
         }
