@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class SignatureSelector implements Runnable{
+public class SignatureSelector implements Runnable {
 
     private final static Logger logger = LoggerFactory.getLogger(SignatureSelector.class);
     private List<String> signatures = new ArrayList<>();
@@ -48,7 +48,7 @@ public class SignatureSelector implements Runnable{
         if (signatures != null && !signatures.isEmpty()) {
             return signatures.get(random.nextInt(signatures.size()));
         } else {
-            if(signatures == null){
+            if (signatures == null) {
                 logger.error("The Signature collection is empty");
             }
         }
@@ -74,8 +74,7 @@ public class SignatureSelector implements Runnable{
                     // Copy the signature to the clipboard
                     StringSelection stringSelection = new StringSelection(signature);
                     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
-
-                } {
+                } else {
                     logger.error("No signature is shortlisted.");
                 }
             }
