@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.aldrineeinsteen</groupId>
     <artifactId>fun-project</artifactId>
-    <version>1.1.26-SNAPSHOT</version>
+    <version>1.1.26</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -68,7 +67,8 @@
         <url>https://github.com/aldrineeinsteen/fun-project</url>
         <connection>scm:git:https://github.com/aldrineeinsteen/fun-project.git</connection>
         <developerConnection>scm:git:https://github.com/aldrineeinsteen/fun-project.git</developerConnection>
-    </scm>
+      <tag>v1.1.26</tag>
+  </scm>
 
     <distributionManagement>
         <repository>
@@ -94,8 +94,7 @@
                         <configuration>
                             <minimizeJar>true</minimizeJar>
                             <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>com.aldrineeinsteen.fun.Main</mainClass>
                                 </transformer>
                             </transformers>
