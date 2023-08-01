@@ -1,4 +1,4 @@
-package com.aldrineeinsteen.fun.options;
+package com.aldrineeinsteen.fun.options.helper;
 
 import java.awt.*;
 
