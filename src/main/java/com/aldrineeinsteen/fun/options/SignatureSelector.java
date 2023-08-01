@@ -1,6 +1,8 @@
 package com.aldrineeinsteen.fun.options;
 
 import org.jline.terminal.Terminal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.awt.*;
@@ -13,6 +15,8 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 public class SignatureSelector implements Runnable{
+
+    private final static Logger logger = LoggerFactory.getLogger(SignatureSelector.class);
     private List<String> signatures = new ArrayList<>();
     private final Random random = new Random();
 
@@ -55,12 +59,14 @@ public class SignatureSelector implements Runnable{
             if (ch == 's') {
                 String signature = getRandomSignature();
                 if (signature != null) {
-                    System.out.println(signature);
+                    logger.info("Selecting random signature: {}.", signature);
 
                     // Copy the signature to the clipboard
                     StringSelection stringSelection = new StringSelection(signature);
                     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
 
+                } {
+                    logger.error("No signature is shortlisted.");
                 }
             }
         }
