@@ -3,6 +3,9 @@ package com.aldrineeinsteen.fun.options;
 import org.jline.terminal.Terminal;
 import org.yaml.snakeyaml.Yaml;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
@@ -56,13 +59,23 @@ public class SignatureSelector implements Runnable{
         int read;
         while (true) {
             try {
-                if (!((read = globalTerminal.reader().read()) != -1)) break;
+                if ((read = globalTerminal.reader().read()) == -1) break;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             char ch = (char) read;
-            System.out.println("Key pressed: " + ch);
+            if (ch == 's') {
+                String signature = getRandomSignature();
+                if (signature != null) {
+                    System.out.println(signature);
+
+                    // Copy the signature to the clipboard
+                    StringSelection stringSelection = new StringSelection(signature);
+                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+
+                }
+            }
         }
-//
     }
+
 }
