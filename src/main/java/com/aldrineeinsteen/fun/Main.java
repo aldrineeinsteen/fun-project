@@ -2,11 +2,15 @@ package com.aldrineeinsteen.fun;
 
 import com.aldrineeinsteen.fun.options.DisplayModeWrapper;
 import com.aldrineeinsteen.fun.options.KeepAliveTimer;
+import com.aldrineeinsteen.fun.options.SignatureSelector;
 import org.apache.commons.cli.*;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -15,8 +19,13 @@ public class Main {
 
     private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String[] args) throws AWTException {
+    private static java.awt.Robot robot;
+
+    public static void main(String[] args) throws AWTException, IOException {
+        Terminal terminal = TerminalBuilder.terminal();
+        terminal.enterRawMode();
         Options options = new Options();
+        robot = new java.awt.Robot();
 
         Option endTimeOption = new Option("e", "end-time", true, "End Time in format of HH:mm");
         endTimeOption.setRequired(false);
@@ -26,9 +35,13 @@ public class Main {
         keepAliveOption.setRequired(false);
         options.addOption(keepAliveOption);
 
-        Option keepAliveSecondsOption = new Option("s", "seconds", false, "Delay in seconds");
+        Option keepAliveSecondsOption = new Option("sec", "seconds", true, "Delay in seconds");
         keepAliveSecondsOption.setRequired(false);
         options.addOption(keepAliveSecondsOption);
+
+        Option signatureOption = new Option("sign", "signature", false, "Signature Selector");
+        signatureOption.setRequired(false);
+        options.addOption(signatureOption);
 
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
@@ -54,8 +67,12 @@ public class Main {
             }
         }
 
+        if (cmd.hasOption("s")) {
+            new SignatureSelector(terminal);
+        }
+
         if (cmd.hasOption("keep-alive")) {
-            java.awt.Robot robot = new java.awt.Robot();
+
             GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
             KeepAliveTimer keepAliveTimer;
             if (cmd.hasOption("seconds")) {
