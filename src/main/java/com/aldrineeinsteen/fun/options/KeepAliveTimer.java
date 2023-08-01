@@ -1,5 +1,6 @@
 package com.aldrineeinsteen.fun.options;
 
+import com.aldrineeinsteen.fun.options.helper.DisplayModeWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,6 +1,6 @@
 package com.aldrineeinsteen.fun;
 
-import com.aldrineeinsteen.fun.options.DisplayModeWrapper;
+import com.aldrineeinsteen.fun.options.helper.DisplayModeWrapper;
 import com.aldrineeinsteen.fun.options.KeepAliveTimer;
 import com.aldrineeinsteen.fun.options.SignatureSelector;
 import org.apache.commons.cli.*;
@@ -19,8 +19,6 @@ public class Main {
 
     private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
-    private static java.awt.Robot robot;
-
     public static void main(String[] args) throws AWTException, IOException {
         Terminal terminal = TerminalBuilder.builder()
                 .system(false)
@@ -28,7 +26,7 @@ public class Main {
                 .build();
         terminal.enterRawMode();
         Options options = new Options();
-        robot = new java.awt.Robot();
+        Robot robot = new Robot();
 
         Option endTimeOption = new Option("e", "end-time", true, "End Time in format of HH:mm");
         endTimeOption.setRequired(false);
@@ -53,21 +51,10 @@ public class Main {
         try {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
-            logger.error(e.getMessage());
+            logger.error("Invalid command line arguments.");
             formatter.printHelp("fun project", options);
             System.exit(1);
             return;
-        }
-
-        int seconds = 1;
-        LocalTime endTime = LocalTime.of(17, 0);  // default end time
-        if (cmd.hasOption("end-time")) {
-            try {
-                endTime = LocalTime.parse(cmd.getOptionValue("end-time"), DateTimeFormatter.ofPattern("HH:mm"));
-            } catch (DateTimeParseException e) {
-                logger.error("Invalid end time format. Please use HH:mm format");
-                System.exit(1);
-            }
         }
 
         if (cmd.hasOption("signature")) {
@@ -77,6 +64,17 @@ public class Main {
         }
 
         if (cmd.hasOption("keep-alive")) {
+
+            int seconds = 1;
+            LocalTime endTime = LocalTime.of(17, 0);  // default end time
+            if (cmd.hasOption("end-time")) {
+                try {
+                    endTime = LocalTime.parse(cmd.getOptionValue("end-time"), DateTimeFormatter.ofPattern("HH:mm"));
+                } catch (DateTimeParseException e) {
+                    logger.error("Invalid end time format. Please use HH:mm format");
+                    System.exit(1);
+                }
+            }
 
             GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
             KeepAliveTimer keepAliveTimer;

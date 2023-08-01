@@ -1,10 +1,8 @@
 package com.aldrineeinsteen.fun.options;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import com.aldrineeinsteen.fun.options.helper.DisplayModeWrapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -16,8 +14,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class KeepAliveTimerTest {
 
-    Robot robot = Mockito.mock(Robot.class);
-    DisplayModeWrapper displayMode = new DisplayModeWrapper(800, 800);
+    final Robot robot = Mockito.mock(Robot.class);
+    final DisplayModeWrapper displayMode = new DisplayModeWrapper(800, 800);
 
     @Test
     public void testRun() {
