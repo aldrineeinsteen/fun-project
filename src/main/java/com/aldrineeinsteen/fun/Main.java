@@ -22,7 +22,10 @@ public class Main {
     private static java.awt.Robot robot;
 
     public static void main(String[] args) throws AWTException, IOException {
-        Terminal terminal = TerminalBuilder.terminal();
+        Terminal terminal = TerminalBuilder.builder()
+                .system(false)
+                .streams(System.in, System.out)
+                .build();
         terminal.enterRawMode();
         Options options = new Options();
         robot = new java.awt.Robot();
@@ -67,8 +70,10 @@ public class Main {
             }
         }
 
-        if (cmd.hasOption("s")) {
-            new SignatureSelector(terminal);
+        if (cmd.hasOption("signature")) {
+            SignatureSelector signatureSelector = new SignatureSelector(terminal);
+            Thread signatureSelectorThread = new Thread(signatureSelector);
+            signatureSelectorThread.start();
         }
 
         if (cmd.hasOption("keep-alive")) {

@@ -10,23 +10,20 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class SignatureSelector {
+public class SignatureSelector implements Runnable{
     private final List<String> signatures;
     private final Random random = new Random();
 
+    private Terminal globalTerminal;
+
     public SignatureSelector(Terminal terminal) throws IOException {
+        globalTerminal = terminal;
         Yaml yaml = new Yaml();
         Map<String, Object> yamlData = yaml.load(getClass().getClassLoader().getResourceAsStream("signatures.yaml"));
         signatures = ((List<Map<String, String>>) yamlData.get("options")).stream()
                 .map(option -> option.get("signature"))
                 .collect(Collectors.toList());
 
-        int read;
-        while ((read = terminal.reader().read()) != -1) {
-            char ch = (char) read;
-            System.out.println("Key pressed: " + ch);
-        }
-//
 //        robot.addKeyListener(new KeyListener() {
 //            @Override
 //            public void keyPressed(KeyEvent e) {
@@ -51,5 +48,21 @@ public class SignatureSelector {
             return signatures.get(random.nextInt(signatures.size()));
         }
         return null;
+    }
+
+    @Override
+    public void run() {
+        globalTerminal.writer().println("Starting the terminal...");
+        int read;
+        while (true) {
+            try {
+                if (!((read = globalTerminal.reader().read()) != -1)) break;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            char ch = (char) read;
+            System.out.println("Key pressed: " + ch);
+        }
+//
     }
 }
