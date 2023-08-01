@@ -8,6 +8,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,8 @@ public class SignatureSelector implements Runnable{
     public SignatureSelector(Terminal terminal) {
         globalTerminal = terminal;
         Yaml yaml = new Yaml();
-        Map<String, Object> yamlData = yaml.load(getClass().getClassLoader().getResourceAsStream("signatures.yaml"));
+        InputStream signatureFile = getClass().getClassLoader().getResourceAsStream("signatures.yaml");
+        Map<String, Object> yamlData = yaml.load(signatureFile);
         Object options = yamlData.get("options");
         if (options instanceof List) {
             List<?> list = (List<?>) options;
@@ -34,13 +36,21 @@ public class SignatureSelector implements Runnable{
                 signatures = list.stream()
                         .map(option -> ((Map<String, String>) option).get("signature"))
                         .collect(Collectors.toList());
+            } else {
+                logger.error("list is either not an instance of Map or is Empty");
             }
+        } else {
+            logger.error("Options is not an instance of List.");
         }
     }
 
     public String getRandomSignature() {
         if (signatures != null && !signatures.isEmpty()) {
             return signatures.get(random.nextInt(signatures.size()));
+        } else {
+            if(signatures == null){
+                logger.error("The Signature collection is empty");
+            }
         }
         return null;
     }
