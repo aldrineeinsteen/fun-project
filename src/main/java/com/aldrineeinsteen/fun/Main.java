@@ -65,7 +65,7 @@ public class Main {
 
         if (cmd.hasOption("keep-alive")) {
 
-            int seconds = 1;
+            int seconds = 30;
             LocalTime endTime = LocalTime.of(17, 0);  // default end time
             if (cmd.hasOption("end-time")) {
                 try {
@@ -79,7 +79,6 @@ public class Main {
             GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
             KeepAliveTimer keepAliveTimer;
             if (cmd.hasOption("seconds")) {
-
                 keepAliveTimer = new KeepAliveTimer(
                         seconds * 1000,
                         endTime,
