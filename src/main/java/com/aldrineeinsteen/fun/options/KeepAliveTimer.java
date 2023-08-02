@@ -18,7 +18,7 @@ public class KeepAliveTimer implements Runnable {
     private final DisplayModeWrapper displayMode;
 
     public KeepAliveTimer(LocalTime endTime, Robot robot, DisplayModeWrapper displayMode) {
-        this(30*1000, endTime, robot, displayMode);
+        this(30 * 1000, endTime, robot, displayMode);
     }
 
     public KeepAliveTimer(Integer delayMilliseconds, LocalTime endTime, Robot robot, DisplayModeWrapper displayMode) {

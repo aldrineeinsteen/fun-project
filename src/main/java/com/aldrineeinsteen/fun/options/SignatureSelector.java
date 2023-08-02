@@ -18,10 +18,9 @@ import java.util.stream.Collectors;
 public class SignatureSelector implements Runnable {
 
     private final static Logger logger = LoggerFactory.getLogger(SignatureSelector.class);
-    private List<String> signatures = new ArrayList<>();
     private final Random random = new Random();
-
     private final Terminal globalTerminal;
+    private List<String> signatures = new ArrayList<>();
 
     public SignatureSelector(Terminal terminal) {
         globalTerminal = terminal;
@@ -58,6 +57,7 @@ public class SignatureSelector implements Runnable {
     @Override
     public void run() {
         globalTerminal.writer().println("Starting the terminal...");
+        writeTips();
         int read;
         while (true) {
             try {
@@ -66,19 +66,48 @@ public class SignatureSelector implements Runnable {
                 throw new RuntimeException(e);
             }
             char ch = (char) read;
-            if (ch == 's') {
-                String signature = getRandomSignature();
-                if (signature != null) {
-                    logger.info("Selecting random signature: {}.", signature);
 
-                    // Copy the signature to the clipboard
-                    StringSelection stringSelection = new StringSelection(signature);
-                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
-                } else {
-                    logger.error("No signature is shortlisted.");
+            switch (ch) {
+                case 's': {
+                    String signature = getRandomSignature();
+                    if (signature != null) {
+                        logger.info("Selecting random signature: {}.", signature);
+
+                        // Copy the signature to the clipboard
+                        StringSelection stringSelection = new StringSelection(signature);
+                        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+                        writeTips(signature);
+                    } else {
+                        logger.error("No signature is shortlisted.");
+                    }
+                    break;
+                }
+                case '\n': {
+                    break;
+                }
+                default: {
+                    writeErrorNTips();
+                    break;
                 }
             }
         }
+    }
+
+    private void writeTips(String signature) {
+        if (signature != null)
+            globalTerminal.writer().println("The selected signature '" + signature + "' is copied to the clipboard for easy access. \n ---");
+        writeTips();
+    }
+
+    private void writeTips() {
+        globalTerminal.writer().print("Quick tool enabled: 's' + Enter gives a random signature:");
+        globalTerminal.writer().flush();
+    }
+
+    private void writeErrorNTips() {
+        globalTerminal.writer().println("No other operations supported at this moment. Please raise any feature request at https://github.com/aldrineeinsteen/fun-project.");
+        globalTerminal.writer().flush();
+        writeTips();
     }
 
 }

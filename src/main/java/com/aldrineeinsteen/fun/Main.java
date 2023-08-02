@@ -1,8 +1,8 @@
 package com.aldrineeinsteen.fun;
 
-import com.aldrineeinsteen.fun.options.helper.DisplayModeWrapper;
 import com.aldrineeinsteen.fun.options.KeepAliveTimer;
 import com.aldrineeinsteen.fun.options.SignatureSelector;
+import com.aldrineeinsteen.fun.options.helper.DisplayModeWrapper;
 import org.apache.commons.cli.*;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
