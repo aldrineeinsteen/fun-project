@@ -53,7 +53,7 @@ public class Main {
         } catch (ParseException e) {
             logger.error("Invalid command line arguments.");
             formatter.printHelp("fun project", options);
-            System.exit(1);
+            System.exit(500);
             return;
         }
 

@@ -38,21 +38,22 @@ Replace `[end-time]` with your desired end time, like '18:00'. If you don't prov
 Navigate to the project directory and execute:
 
 ```shell
-mvn clean install
+mvnw clean install
 ```
 
 ### Manual Run
 Navigate to the `target` directory and execute:
 
 ```shell
-java -jar fun-project.jar -e 18:00 -k
+java -jar fun-project.jar -e 18:00 -k -sign
 ```
 This will run the program until 6pm and keep the system active.
 
 ## Options
 - Use `-e` or `--end-time` followed by the time in HH:mm format to set the end time for the program.
 - Use `-k` or `--keep-alive` to keep the system active.
-- Use `-s` or `--seconds` to configure the seconds on top of keep-alive timer
+- Use `-s` or `--seconds` to configure the seconds on top of keep-alive timer.
+- User `-sign` or `--signature` to configure the quick tool - Signature Selector.
 
 ## License
 This project is licensed under the Apache License. See the `LICENSE` file for details.

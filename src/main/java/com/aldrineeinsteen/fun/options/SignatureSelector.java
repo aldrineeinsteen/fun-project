@@ -82,6 +82,7 @@ public class SignatureSelector implements Runnable {
                     }
                     break;
                 }
+                case '\r':
                 case '\n': {
                     break;
                 }
