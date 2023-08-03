@@ -82,6 +82,8 @@ public class SignatureSelector implements Runnable {
                     }
                     break;
                 }
+                //Adding support to support windows subsystem. addressing issue #24
+                case '\r':
                 case '\n': {
                     break;
                 }
