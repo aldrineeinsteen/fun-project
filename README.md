@@ -14,7 +14,7 @@ git clone https://github.com/username/FunProject.git
 
 ## Building and Running
 The project includes a batch script for Windows (`run.bat`) and a shell script for Unix-like systems (`run.sh`) to simplify the building and running process.
-These scripts will first check if `target/fun-project.jar` exists. If the jar file exists, it will be run directly. If the jar file doesn't exist, the project will be built using Maven and then the jar file will be run.
+These scripts will first check if `target/fun-project-uber-jar-with-dependencies.jar` exists. If the jar file exists, it will be run directly. If the jar file doesn't exist, the project will be built using Maven and then the jar file will be run.
 You can pass an end time to the script, which will be passed to the jar file when it's run. If you don't pass an end time, it will default to '17:00'.
 
 By default, the application moves the mouse pointer by one pixel every 30 seconds. This can be overridden; please refer to [Options](#options)
@@ -45,7 +45,7 @@ mvnw clean install
 Navigate to the `target` directory and execute:
 
 ```shell
-java -jar fun-project.jar -e 18:00 -k -sign
+java -jar fun-project-uber-jar-with-dependencies.jar -e 18:00 -k -sign
 ```
 This will run the program until 6pm and keep the system active.
 

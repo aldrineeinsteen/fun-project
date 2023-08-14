@@ -10,8 +10,8 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.final>1.2.0</version.final>
-        <version.dev>1.2.1-SNAPSHOT</version.dev>
+        <version.final>1.2.1</version.final>
+        <version.dev>1.2.2-SNAPSHOT</version.dev>
     </properties>
 
     <description>Fun Project :: A Console App
@@ -141,6 +141,9 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
+                        <configuration>
+                            <finalName>fun-project-uber</finalName>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
