@@ -7,6 +7,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+/**
+ * The core executor which is responsible for the delegation.
+ * The {@link com.aldrineeinsteen.fun.Main} class will be deprecated in future.
+ */
 public class TerminalParser implements Runnable {
 
     private final static Logger logger = LoggerFactory.getLogger(TerminalParser.class);
