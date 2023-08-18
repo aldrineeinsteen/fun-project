@@ -3,6 +3,7 @@ package com.aldrineeinsteen.fun;
 import com.aldrineeinsteen.fun.options.KeepAliveTimer;
 import com.aldrineeinsteen.fun.options.SignatureSelector;
 import com.aldrineeinsteen.fun.options.helper.DisplayModeWrapper;
+import com.aldrineeinsteen.fun.options.helper.TerminalParser;
 import org.apache.commons.cli.*;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
@@ -58,9 +59,10 @@ public class Main {
         }
 
         if (cmd.hasOption("signature")) {
-            SignatureSelector signatureSelector = new SignatureSelector(terminal);
-            Thread signatureSelectorThread = new Thread(signatureSelector);
-            signatureSelectorThread.start();
+            SignatureSelector signatureSelector = new SignatureSelector();
+            TerminalParser terminalParser = new TerminalParser(terminal, signatureSelector);
+            Thread terminalParserThread = new Thread(terminalParser);
+            terminalParserThread.start();
         }
 
         if (cmd.hasOption("keep-alive")) {
