@@ -5,6 +5,7 @@
         <groupId>com.aldrineeinsteen</groupId>
         <artifactId>fun-project</artifactId>
         <version>1.2.4-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>signature-selector</artifactId>
