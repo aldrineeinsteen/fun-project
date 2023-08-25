@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.aldrineeinsteen</groupId>
-        <artifactId>fun-project</artifactId>
+        <artifactId>plugins</artifactId>
         <version>1.2.6-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>keep-alive-timer</artifactId>
+    <artifactId>signature-selector</artifactId>
 
 </project>
