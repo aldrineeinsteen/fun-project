@@ -4,7 +4,7 @@
 
     <groupId>com.aldrineeinsteen</groupId>
     <artifactId>fun-project</artifactId>
-    <version>1.2.4-SNAPSHOT</version>
+    <version>1.2.4</version>
     <packaging>pom</packaging>
     <modules>
         <module>keep-alive-timer</module>
@@ -92,7 +92,7 @@
         <url>https://github.com/aldrineeinsteen/fun-project</url>
         <connection>scm:git:https://github.com/aldrineeinsteen/fun-project.git</connection>
         <developerConnection>scm:git:https://github.com/aldrineeinsteen/fun-project.git</developerConnection>
-      <tag>HEAD</tag>
+      <tag>v1.2.4</tag>
   </scm>
 
     <distributionManagement>
