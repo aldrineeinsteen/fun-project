@@ -73,8 +73,8 @@ public class Main {
                 try {
                     endTime = LocalTime.parse(cmd.getOptionValue("end-time"), DateTimeFormatter.ofPattern("HH:mm"));
                 } catch (DateTimeParseException e) {
-                    logger.error("Invalid end time format. Please use HH:mm format");
-                    System.exit(1);
+                    logger.error("Invalid end time format. Please use HH:mm format", e);
+                    throw e;
                 }
             }
 
