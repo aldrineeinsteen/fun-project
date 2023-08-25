@@ -14,12 +14,12 @@
         <dependency>
             <groupId>com.aldrineeinsteen</groupId>
             <artifactId>keep-alive-timer</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.aldrineeinsteen</groupId>
             <artifactId>signature-selector</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
