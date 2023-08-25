@@ -1,7 +1,10 @@
 # Fun Project
-Fun Project is a Java-based console application that moves your mouse pointer around your screen to keep the system active till a specified time.
+
+Fun Project is a Java-based console application that moves your mouse pointer around your screen to keep the system
+active till a specified time.
 
 ## Getting Started
+
 Clone the repository using git:
 
 ```shell
@@ -9,32 +12,45 @@ git clone https://github.com/username/FunProject.git
 ```
 
 ## Prerequisites
+
 - Java JDK 11 or later
 - Apache Maven
 
 ## Building and Running
-The project includes a batch script for Windows (`run.bat`) and a shell script for Unix-like systems (`run.sh`) to simplify the building and running process.
-These scripts will first check if `target/fun-project-uber-jar-with-dependencies.jar` exists. If the jar file exists, it will be run directly. If the jar file doesn't exist, the project will be built using Maven and then the jar file will be run.
-You can pass an end time to the script, which will be passed to the jar file when it's run. If you don't pass an end time, it will default to '17:00'.
 
-By default, the application moves the mouse pointer by one pixel every 30 seconds. This can be overridden; please refer to [Options](#options)
+The project includes a batch script for Windows (`run.bat`) and a shell script for Unix-like systems (`run.sh`) to
+simplify the building and running process.
+These scripts will first check if `target/fun-project-uber-jar-with-dependencies.jar` exists. If the jar file exists, it
+will be run directly. If the jar file doesn't exist, the project will be built using Maven and then the jar file will be
+run.
+You can pass an end time to the script, which will be passed to the jar file when it's run. If you don't pass an end
+time, it will default to '17:00'.
+
+By default, the application moves the mouse pointer by one pixel every 30 seconds. This can be overridden; please refer
+to [Options](#options)
 
 ### On Windows
+
 Run the batch file with the optional end time:
+
 ```shell
 run.bat [end-time]
 ```
 
 ### On Unix-like systems
+
 Make the shell script executable and then run it with the optional end time:
+
 ```shell
 chmod +x run.sh
 ./run.sh [end-time]
 ```
 
-Replace `[end-time]` with your desired end time, like '18:00'. If you don't provide an end time, '17:00' will be used by default.
+Replace `[end-time]` with your desired end time, like '18:00'. If you don't provide an end time, '17:00' will be used by
+default.
 
 ### Manual Build
+
 Navigate to the project directory and execute:
 
 ```shell
@@ -42,18 +58,22 @@ mvnw clean install
 ```
 
 ### Manual Run
+
 Navigate to the `target` directory and execute:
 
 ```shell
 java -jar fun-project-uber-jar-with-dependencies.jar -e 18:00 -k -sign
 ```
+
 This will run the program until 6pm and keep the system active.
 
 ## Options
+
 - Use `-e` or `--end-time` followed by the time in HH:mm format to set the end time for the program.
 - Use `-k` or `--keep-alive` to keep the system active.
 - Use `-s` or `--seconds` to configure the seconds on top of keep-alive timer.
 - User `-sign` or `--signature` to configure the quick tool - Signature Selector.
 
 ## License
+
 This project is licensed under the Apache License. See the `LICENSE` file for details.

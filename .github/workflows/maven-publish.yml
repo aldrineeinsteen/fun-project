@@ -38,7 +38,7 @@ jobs:
           name: release.properties
           path: release.properties
   perform:
-    needs: [prepare]
+    needs: [ prepare ]
     runs-on: ubuntu-latest
     permissions:
       contents: write

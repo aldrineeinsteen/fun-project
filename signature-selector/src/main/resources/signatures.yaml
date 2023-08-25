@@ -2,241 +2,493 @@ date: 21/03/2023
 options:
   - signature: Innovatively Yours
     tag: professional
+    weight: 1.5
   - signature: Creatively Composed
     tag: professional
+    weight: 1.5
   - signature: With Spirited Zeal
     tag: professional
+    weight: 1.5
   - signature: Ingeniously Inspired
     tag: professional
+    weight: 1.5
   - signature: Energetically Engaged
     tag: professional
+    weight: 1.5
   - signature: Warmly Woven Words
     tag: professional
+    weight: 1.5
   - signature: Harmoniously Yours
     tag: professional
+    weight: 1.5
   - signature: Bespoke Best Wishes
     tag: professional
+    weight: 1.5
   - signature: Thoughtfully Tailored
     tag: professional
+    weight: 1.5
   - signature: Vibrant Ventures
     tag: professional
+    weight: 1.5
   - signature: Artfully Aligned
     tag: professional
+    weight: 1.5
   - signature: Mindfully Manifested
     tag: professional
+    weight: 1.5
   - signature: Daringly Dedicated
     tag: professional
+    weight: 1.5
   - signature: Skillfully Sincere
     tag: professional
+    weight: 1.5
   - signature: Masterfully Minded
     tag: professional
+    weight: 1.5
   - signature: Eloquently Expressed
     tag: professional
+    weight: 1.5
   - signature: Confidently Crafted
     tag: professional
+    weight: 1.5
   - signature: Fervently Focused
     tag: professional
+    weight: 1.5
   - signature: Distinctly Driven
     tag: professional
+    weight: 1.5
   - signature: Positively Pioneering
     tag: professional
+    weight: 1.5
   - signature: Boldly Brilliant
     tag: professional
+    weight: 1.5
   - signature: Radiantly Resourceful
     tag: professional
+    weight: 1.5
   - signature: Strategically Steadfast
     tag: professional
+    weight: 1.5
   - signature: Imaginatively Intrepid
     tag: professional
+    weight: 1.5
   - signature: Tenaciously Transformative
     tag: professional
+    weight: 1.5
   - signature: Uniquely United
     tag: professional
+    weight: 1.5
   - signature: Fearlessly Forward
     tag: professional
+    weight: 1.5
   - signature: Ambitiously Authentic
     tag: professional
+    weight: 1.5
   - signature: Sustainably Savvy
     tag: professional
+    weight: 1.5
   - signature: Passionately Progressive
     tag: professional
+    weight: 1.5
   - signature: Exquisitely Empowering
     tag: professional
+    weight: 1.5
   - signature: Committedly Creative
     tag: professional
+    weight: 1.5
   - signature: Visionary Vibes
     tag: professional
+    weight: 1.5
   - signature: Futuristically Focused
     tag: professional
+    weight: 1.5
   - signature: Collaboratively Connected
     tag: professional
+    weight: 1.5
   - signature: Profoundly Proactive
     tag: professional
+    weight: 1.5
   - signature: Astutely Aspirational
     tag: professional
+    weight: 1.5
   - signature: Respectfully Resolute
     tag: professional
+    weight: 1.5
   - signature: Holistically Harmonized
     tag: professional
+    weight: 1.5
   - signature: Triumphantly Together
     tag: professional
+    weight: 1.5
+  - signature: Methodically Meticulous
+    tag: professional
+    weight: 2
+  - signature: Rigorously Researched
+    tag: professional
+    weight: 2
+  - signature: Systematically Structured
+    tag: professional
+    weight: 2
+  - signature: Technically Tailored
+    tag: professional
+    weight: 2
+  - signature: Precisely Processed
+    tag: professional
+    weight: 2
+  - signature: Analytically Aligned
+    tag: professional
+    weight: 2
+  - signature: Deliberately Designed
+    tag: professional
+    weight: 2
+  - signature: Strategically Sourced
+    tag: professional
+    weight: 2
+  - signature: Expertly Executed
+    tag: professional
+    weight: 2
+  - signature: Carefully Curated
+    tag: professional
+    weight: 2
+  - signature: Thoroughly Thought-through
+    tag: professional
+    weight: 2
+  - signature: Professionally Polished
+    tag: professional
+    weight: 2
+  - signature: Meticulously Managed
+    tag: professional
+    weight: 2
+  - signature: Innovatively Integrated
+    tag: professional
+    weight: 2
+  - signature: Reliably Resourced
+    tag: professional
+    weight: 2
+  - signature: Consistently Constructed
+    tag: professional
+    weight: 2
+  - signature: Dependably Developed
+    tag: professional
+    weight: 2
+  - signature: Organizedly Orchestrated
+    tag: professional
+    weight: 2
+  - signature: Skillfully Streamlined
+    tag: professional
+    weight: 2
+  - signature: Logically Laid-out
+    tag: professional
+    weight: 2
+  - signature: Intelligently Initiated
+    tag: professional
+    weight: 2
+  - signature: Purposefully Produced
+    tag: professional
+    weight: 2
+  - signature: Systemically Synthesized
+    tag: professional
+    weight: 2
+  - signature: Effectively Established
+    tag: professional
+    weight: 2
+  - signature: Responsibly Refined
+    tag: professional
+    weight: 2
+  - signature: Optimally Organized
+    tag: professional
+    weight: 2
+  - signature: Suitably Scaled
+    tag: professional
+    weight: 2
+  - signature: Prudently Planned
+    tag: professional
+    weight: 2
+  - signature: Cautiously Configured
+    tag: professional
+    weight: 2
+  - signature: Respectably Recognized
+    tag: professional
+    weight: 2
+  - signature: Notably Navigated
+    tag: professional
+    weight: 2
+  - signature: Judiciously Judged
+    tag: professional
+    weight: 2
+  - signature: Wisely Worked
+    tag: professional
+    weight: 2
+  - signature: Virtuously Validated
+    tag: professional
+    weight: 2
+  - signature: Admirably Acknowledged
+    tag: professional
+    weight: 2
+  - signature: Gravely Graded
+    tag: professional
+    weight: 2
+  - signature: Seriously Scrutinized
+    tag: professional
+    weight: 2
+  - signature: Formally Formulated
+    tag: professional
+    weight: 2
+  - signature: Officially Ordered
+    tag: professional
+    weight: 2
+  - signature: Properly Processed
+    tag: professional
+    weight: 2
+  - signature: Respectfully Reviewed
+    tag: professional
+    weight: 2
+  - signature: Suitably Studied
+    tag: professional
+    weight: 2
+  - signature: Traditionally Tracked
+    tag: professional
+    weight: 2
+  - signature: Customarily Checked
+    tag: professional
+    weight: 2
   - signature: Warm Regards
     tag: general
+    weight: 1.5
   - signature: Best Wishes
     tag: general
+    weight: 1.5
   - signature: Yours Sincerely
     tag: general
+    weight: 1.5
   - signature: Kind Regards
     tag: general
+    weight: 1.5
   - signature: Many Thanks
     tag: general
+    weight: 1.5
   - signature: Cordially Yours
     tag: general
+    weight: 1.5
   - signature: Yours Truly
     tag: general
+    weight: 1.5
   - signature: Take Care
     tag: general
+    weight: 1.5
   - signature: Cheers
     tag: general
+    weight: 1.5
   - signature: Yours Faithfully
     tag: general
+    weight: 1.5
   - signature: With Gratitude
     tag: general
+    weight: 1.5
   - signature: Stay Well
     tag: general
+    weight: 1.5
   - signature: In Appreciation
     tag: general
+    weight: 1.5
   - signature: All the Best
     tag: general
+    weight: 1.5
   - signature: Until Next Time
     tag: general
+    weight: 1.5
   - signature: Keep Smiling
     tag: general
+    weight: 1.5
   - signature: With Warmth
     tag: general
+    weight: 1.5
   - signature: Be Well
     tag: general
+    weight: 1.5
   - signature: Wishing You Success
     tag: general
+    weight: 1.5
   - signature: Yours in Service
     tag: general
+    weight: 1.5
   - signature: Have a Great Day
     tag: general
+    weight: 1.5
   - signature: Happy Thoughts
     tag: general
+    weight: 1.5
   - signature: Best Regards
     tag: general
+    weight: 1.5
   - signature: Sincerely
     tag: general
+    weight: 1.5
   - signature: With Thanks
     tag: general
+    weight: 1.5
   - signature: Yours Respectfully
     tag: general
+    weight: 1.5
   - signature: Fond Regards
     tag: general
+    weight: 1.5
   - signature: Appreciatively
     tag: general
+    weight: 1.5
   - signature: Wishing You Well
     tag: general
+    weight: 1.5
   - signature: Stay Safe
     tag: general
+    weight: 1.5
   - signature: Stay Positive
     tag: general
+    weight: 1.5
   - signature: Warmest Regards
     tag: general
+    weight: 1.5
   - signature: With Good Vibes
     tag: general
+    weight: 1.5
   - signature: To Your Success
     tag: general
+    weight: 1.5
   - signature: Yours in Good Health
     tag: general
+    weight: 1.5
   - signature: Cheers to You
     tag: general
+    weight: 1.5
   - signature: Onward and Upward
     tag: general
+    weight: 1.5
   - signature: With Confidence
     tag: general
+    weight: 1.5
   - signature: In Good Spirits
     tag: general
+    weight: 1.5
   - signature: Peace and Joy
     tag: general
+    weight: 1.5
   - signature: With a Smile
     tag: friendly
+    weight: 1
   - signature: Warmly
     tag: friendly
+    weight: 1
   - signature: Friendly Wishes
     tag: friendly
+    weight: 1
   - signature: Hugs and High Fives
     tag: friendly
+    weight: 1
   - signature: In Friendship
     tag: friendly
+    weight: 1
   - signature: Keep Shining
     tag: friendly
+    weight: 1
   - signature: Your Pal
     tag: friendly
+    weight: 1
   - signature: Stay Awesome
     tag: friendly
+    weight: 1
   - signature: Your Cheerleader
     tag: friendly
+    weight: 1
   - signature: With a Friendly Nod
     tag: friendly
+    weight: 1
   - signature: Yours in Good Cheer
     tag: friendly
+    weight: 1
   - signature: Happily
     tag: friendly
+    weight: 1
   - signature: Virtual Hugs
     tag: friendly
+    weight: 1
   - signature: Smiles and Sunshine
     tag: friendly
+    weight: 1
   - signature: Heartfelt Thanks
     tag: friendly
+    weight: 1
   - signature: Your Friend
     tag: friendly
+    weight: 1
   - signature: Brightest Blessings
     tag: friendly
+    weight: 1
   - signature: With a Warm Heart
     tag: friendly
+    weight: 1
   - signature: Cheerfully
     tag: friendly
+    weight: 1
   - signature: Friendly Regards
     tag: friendly
+    weight: 1
   - signature: Take It Easy
     tag: friendly
+    weight: 1
   - signature: Your Buddy
     tag: friendly
+    weight: 1
   - signature: Shine On
     tag: friendly
+    weight: 1
   - signature: With Kindness
     tag: friendly
+    weight: 1
   - signature: In Good Company
     tag: friendly
+    weight: 1
   - signature: With a Happy Heart
     tag: friendly
+    weight: 1
   - signature: Your Supporter
     tag: friendly
+    weight: 1
   - signature: Joyfully
     tag: friendly
+    weight: 1
   - signature: Best of Luck
     tag: friendly
+    weight: 1
   - signature: Your Comrade
     tag: friendly
+    weight: 1
   - signature: Wishing You Happiness
     tag: friendly
+    weight: 1
   - signature: Gratefully Yours
     tag: friendly
+    weight: 1
   - signature: Stay Wonderful
     tag: friendly
+    weight: 1
   - signature: Big Smiles
     tag: friendly
+    weight: 1
   - signature: Your Sidekick
     tag: friendly
+    weight: 1
   - signature: Laughter and Love
     tag: friendly
+    weight: 1
   - signature: With Friendship
     tag: friendly
+    weight: 1
   - signature: Positive Vibes
     tag: friendly
+    weight: 1
   - signature: Keep Rocking
     tag: friendly
+    weight: 1
   - signature: Your Confidant
     tag: friendly
+    weight: 1
