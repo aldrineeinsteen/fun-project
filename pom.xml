@@ -5,6 +5,12 @@
     <groupId>com.aldrineeinsteen</groupId>
     <artifactId>fun-project</artifactId>
     <version>1.2.3-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>keep-alive-timer</module>
+        <module>signature-selector</module>
+        <module>fun-core</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -97,56 +103,7 @@
     </distributionManagement>
 
     <build>
-        <finalName>fun-project</finalName>
         <plugins>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-shade-plugin</artifactId>-->
-<!--                <version>3.2.4</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>shade</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <minimizeJar>false</minimizeJar>-->
-<!--                            <transformers>-->
-<!--                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">-->
-<!--                                    <mainClass>com.aldrineeinsteen.fun.Main</mainClass>-->
-<!--                                </transformer>-->
-<!--                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />-->
-<!--                            </transformers>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.aldrineeinsteen.fun.Main</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>fun-project-uber</finalName>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
