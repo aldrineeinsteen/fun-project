@@ -1,0 +1,8 @@
+name: SignatureSelector
+options:
+  - shortOpt: sign
+    name: Signature
+    longOpt: signature
+    description: Weighted signature selector.
+    hasArguments: false
+    required: false

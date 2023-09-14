@@ -1,0 +1,20 @@
+name: KeepAliveTimer
+options:
+  - shortOpt: k
+    name: Keep alive
+    longOpt: keep-alive
+    description: Run the KeepAlive timer.
+    hasArguments: false
+    required: false
+  - shortOpt: e
+    name: End time
+    longOpt: end-time
+    description: End Time in format of HH:mm.
+    hasArguments: true
+    required: false
+  - shortOpt: sec
+    name: Seconds
+    longOpt: seconds
+    description: Delay in seconds.
+    hasArguments: true
+    required: false

@@ -3,6 +3,7 @@ package com.aldrineeinsteen.fun;
 import com.aldrineeinsteen.fun.options.KeepAliveTimer;
 import com.aldrineeinsteen.fun.options.SignatureSelector;
 import com.aldrineeinsteen.fun.options.helper.DisplayModeWrapper;
+import com.aldrineeinsteen.fun.options.helper.PluginRepository;
 import com.aldrineeinsteen.fun.options.helper.TerminalParser;
 import org.apache.commons.cli.*;
 import org.jline.terminal.Terminal;
@@ -18,44 +19,29 @@ import java.time.format.DateTimeParseException;
 
 public class Main {
 
+    private static final PluginRepository pluginRepository = new PluginRepository();
+
     private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String[] args) throws AWTException, IOException {
+    public static void main(String[] args) throws AWTException, IOException, ParseException {
+        pluginRepository.init();
         Terminal terminal = TerminalBuilder.builder()
                 .system(false)
                 .streams(System.in, System.out)
                 .build();
         terminal.enterRawMode();
-        Options options = new Options();
         Robot robot = new Robot();
-
-        Option endTimeOption = new Option("e", "end-time", true, "End Time in format of HH:mm");
-        endTimeOption.setRequired(false);
-        options.addOption(endTimeOption);
-
-        Option keepAliveOption = new Option("k", "keep-alive", false, "Run the KeepAlive timer");
-        keepAliveOption.setRequired(false);
-        options.addOption(keepAliveOption);
-
-        Option keepAliveSecondsOption = new Option("sec", "seconds", true, "Delay in seconds");
-        keepAliveSecondsOption.setRequired(false);
-        options.addOption(keepAliveSecondsOption);
-
-        Option signatureOption = new Option("sign", "signature", false, "Signature Selector");
-        signatureOption.setRequired(false);
-        options.addOption(signatureOption);
 
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd;
 
         try {
-            cmd = parser.parse(options, args);
+            cmd = parser.parse(PluginRepository.getOptions(), args);
         } catch (ParseException e) {
-            logger.error("Invalid command line arguments.");
-            formatter.printHelp("fun project", options);
-            System.exit(500);
-            return;
+            formatter.printHelp("fun project", PluginRepository.getOptions());
+            logger.error("Invalid command line arguments: ", e);
+            throw e;
         }
 
         if (cmd.hasOption("signature")) {
