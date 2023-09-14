@@ -1,17 +1,17 @@
 #!/bin/bash
-jarfile=target/fun-project-uber-jar-with-dependencies.jar
-
-end_time=${1:-17:30}
+jarfile=target/fun-project.jar
+libFolder=target/lib/*
+pluginFolder=target/plugins/*
 
 if [[ -f "$jarfile" ]]; then
-    echo "Running fun-project-uber-jar-with-dependencies.jar"
-    java -jar $jarfile --end-time "$end_time" --keep-alive --signature
-else
-    echo "fun-project-uber-jar-with-dependencies.jar not found, building with Maven"
+    echo "Running fun-project.jar"
+    java -cp "$libFolder:$pluginFolder:$jarfile" com.aldrineeinsteen.fun.Main --signature --keep-alive
+ else
+    echo "fun-project.jar not found, building with Maven"
     ./mvnw clean install
     if [[ -f "$jarfile" ]]; then
-        echo "Running fun-project-uber-jar-with-dependencies.jar"
-        java -jar $jarfile --end-time "$end_time" --keep-alive --signature
+        echo "Running fun-project.jar"
+        java -cp "$libFolder:$pluginFolder:$jarfile" com.aldrineeinsteen.fun.Main --signature --keep-alive
     else
         echo "Error building jar file"
         exit 1

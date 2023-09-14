@@ -4,8 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.StringSelection;
 import java.io.InputStream;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class SignatureSelector {
@@ -13,6 +18,8 @@ public class SignatureSelector {
     private final static Logger logger = LoggerFactory.getLogger(SignatureSelector.class);
     private final Random random = new Random();
     private final List<Signature> weightedSignatures = new ArrayList<>();
+    private final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    private final ClipboardOwner clipboardOwner = null;
 
     public SignatureSelector() {
         Yaml yaml = new Yaml();
@@ -47,7 +54,9 @@ public class SignatureSelector {
 
     public String getRandomSignature() {
         if (!weightedSignatures.isEmpty()) {
-            return weightedSignatures.get(random.nextInt(weightedSignatures.size())).getText();
+            String selectedSignature = weightedSignatures.get(random.nextInt(weightedSignatures.size())).getText();
+            clipboard.setContents(new StringSelection(selectedSignature), clipboardOwner);
+            return selectedSignature;
         } else {
             logger.error("The Signature collection is empty");
         }

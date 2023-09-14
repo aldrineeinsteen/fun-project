@@ -1,5 +1,6 @@
 package com.aldrineeinsteen.fun;
 
+import org.apache.commons.cli.ParseException;
 import org.junit.Rule;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.jupiter.api.Assertions;
@@ -13,10 +14,9 @@ public class MainTest {
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
     @Test
-    public void testMainWithInvalidArguments() throws Exception {
-        String[] args = {"invalid", "arguments"};
-        exit.expectSystemExitWithStatus(500);
-        Main.main(args);
+    public void testMainWithInvalidArguments() {
+        String[] args = {"--invalid", "--arguments"};
+        Assertions.assertThrows(ParseException.class, () -> Main.main(args));
     }
 
     @Test
@@ -29,33 +29,33 @@ public class MainTest {
     @Test
     public void testMainWithKeepAliveOption() throws Exception {
         // This test would ideally mock the KeepAliveTimer and check if it's invoked with default values.
-        String[] args = {"-k"};
+        String[] args = {"--keep-alive"};
         Main.main(args);
     }
 
     @Test
     public void testMainWithKeepAliveAndEndTimeOption() throws Exception {
         // This test would ideally mock the KeepAliveTimer and check if it's invoked with the specified end time.
-        String[] args = {"-k", "-e", "18:30"};
+        String[] args = {"--keep-alive", "--end-time", "18:30"};
         Main.main(args);
     }
 
     @Test
     public void testMainWithValidEndTime() throws Exception {
-        String[] args = {"-k", "-e", "18:30"};
+        String[] args = {"--keep-alive", "--end-time", "18:30"};
         Main.main(args);
     }
 
     @Test
     public void testMainWithInvalidEndTime() {
-        String[] args = {"-k", "-e", "1830"};
+        String[] args = {"--keep-alive", "--end-time", "1830"};
         Assertions.assertThrows(DateTimeParseException.class, () -> Main.main(args));
     }
 
     @Test
     public void testMainWithKeepAliveAndSecondsOption() throws Exception {
         // This test would ideally mock the KeepAliveTimer and check if it's invoked with the specified seconds.
-        String[] args = {"-k", "-sec", "45"};
+        String[] args = {"--keep-alive", "--seconds", "45"};
         Main.main(args);
     }
 }

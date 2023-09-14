@@ -24,7 +24,7 @@ public class TerminalParser implements Runnable {
 
     @Override
     public void run() {
-        globalTerminal.writer().println("Starting the terminal...");
+        logger.info("Starting the terminal...");
         writeTips();
         int read;
         while (true) {
@@ -39,7 +39,7 @@ public class TerminalParser implements Runnable {
                 case 's': {
                     String signature = signatureSelector.getRandomSignature();
                     if (signature != null) {
-                        logger.info("Selecting random signature: {}.", signature);
+                        logger.debug("Selecting random signature: {}.", signature);
                         writeTips(signature);
                     } else {
                         logger.error("No signature is shortlisted.");
@@ -61,12 +61,12 @@ public class TerminalParser implements Runnable {
 
     private void writeTips(String signature) {
         if (signature != null)
-            globalTerminal.writer().println("The selected signature '" + signature + "' is copied to the clipboard for easy access. \n ---");
+            logger.info("The selected signature '{}' is copied to the clipboard for easy access.", signature);
         writeTips();
     }
 
     private void writeTips() {
-        globalTerminal.writer().print("Quick tool enabled: 's' + Enter gives a random signature:");
+        globalTerminal.writer().print("Quick tool enabled: 's' + Enter gives a random signature: ");
         globalTerminal.writer().flush();
     }
 

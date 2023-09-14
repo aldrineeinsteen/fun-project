@@ -48,6 +48,12 @@
                 <version>2.4</version>
                 <configuration>
                     <outputDirectory>../target</outputDirectory>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.aldrineeinsteen.fun.Main</mainClass>
+                        </manifest>
+                    </archive>
                 </configuration>
             </plugin>
         </plugins>
