@@ -10,6 +10,7 @@
         <module>fun-core</module>
         <module>plugins</module>
         <module>plugins/plugin-core</module>
+        <module>plugins/utility-core</module>
     </modules>
 
     <properties>

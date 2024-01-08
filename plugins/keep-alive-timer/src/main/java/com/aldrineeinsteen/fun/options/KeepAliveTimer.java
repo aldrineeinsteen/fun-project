@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.time.LocalTime;
 
-public class KeepAliveTimer implements Runnable {
+public class KeepAliveTimer extends UtilityTemplate {
     private final static Logger logger = LoggerFactory.getLogger(KeepAliveTimer.class);
     private static final int DEFAULT_DELAY_MILLISECONDS = 30 * 1000;
 
@@ -47,8 +47,7 @@ public class KeepAliveTimer implements Runnable {
         this.displayMode = displayMode;
     }
 
-    @Override
-    public void run() {
+    public void runUtility() {
         if (robot == null || endTime == null || displayMode == null) {
             logger.error("KeepAliveTimer is not properly initialized");
             return;
@@ -57,7 +56,7 @@ public class KeepAliveTimer implements Runnable {
         int screenHeight = displayMode.getHeight() - 1;
         int screenWidth = displayMode.getWidth() - 1;
 
-        logger.info("Current screen resolution - {}x{}p", displayMode.getWidth(), displayMode.getHeight());
+        logger.debug("Current screen resolution - {}x{}p", displayMode.getWidth(), displayMode.getHeight());
 
         while (LocalTime.now().isBefore(endTime)) {
             robot.delay(delayMilliseconds);
@@ -78,5 +77,10 @@ public class KeepAliveTimer implements Runnable {
             robot.mouseMove(xPosition, yPosition);
             logger.info("Updated position - {}, {}", xPosition, yPosition);
         }
+    }
+
+    @Override
+    protected void logStart() {
+        logger.info("Starting utility: {}", this.getClass());
     }
 }

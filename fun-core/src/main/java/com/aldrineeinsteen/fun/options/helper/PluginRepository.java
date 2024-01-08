@@ -134,11 +134,12 @@ public class PluginRepository {
 
             if (pluginInstance instanceof PluginTemplate) {
                 registerPlugin(className, (PluginTemplate) pluginInstance);
-                logger.debug("Registered plugin: {}", className);
+                logger.info("Registered plugin: {}", className);
             } else {
                 logger.info("Class {} does not implement the Plugin interface", className);
                 if(pluginInstance instanceof Runnable){
                     registerUtility(className, (Runnable) pluginInstance);
+                    logger.info("Registered utility: {}", className);
                 }
             }
         } catch (Exception e) {
