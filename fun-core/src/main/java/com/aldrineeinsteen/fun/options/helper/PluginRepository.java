@@ -45,8 +45,8 @@ public class PluginRepository {
 
     // A class to hold shortcut and plugin information
     public static class ShortcutAction {
-        private String action;
-        private String plugin;
+        private final String action;
+        private final String plugin;
 
         @Override
         public String toString() {

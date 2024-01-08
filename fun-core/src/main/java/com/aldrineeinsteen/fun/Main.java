@@ -1,7 +1,6 @@
 package com.aldrineeinsteen.fun;
 
 import com.aldrineeinsteen.fun.options.GlobalInputListener;
-import com.aldrineeinsteen.fun.options.PluginTemplate;
 import com.aldrineeinsteen.fun.options.helper.PluginRepository;
 import org.apache.commons.cli.*;
 import org.jline.terminal.Terminal;
@@ -9,7 +8,6 @@ import org.jline.terminal.TerminalBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.io.IOException;
 
 public class Main {
@@ -18,7 +16,7 @@ public class Main {
 
     private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String[] args) throws IOException, AWTException, ParseException {
+    public static void main(String[] args) throws IOException, ParseException {
         pluginRepository.init();
 
         Terminal terminal = TerminalBuilder.builder()
@@ -42,11 +40,11 @@ public class Main {
         }
 
         // Execute the action for each loaded plugin if needed
-        pluginRepository.getLoadedPlugins().forEach(pluginName -> {
+        PluginRepository.getLoadedPlugins().forEach(pluginName -> {
             //Object plugin = PluginRepository.getPlugin(pluginName);
             Runnable plugin = PluginRepository.getUtility(pluginName);
             if (plugin instanceof Runnable) {
-                new Thread((Runnable) plugin).start();
+                new Thread(plugin).start();
             }
         });
 

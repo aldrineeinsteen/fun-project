@@ -1,16 +1,13 @@
 package com.aldrineeinsteen.fun.options;
 
+import com.aldrineeinsteen.fun.options.helper.PluginRepository;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.NativeInputEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
-
-import com.aldrineeinsteen.fun.options.helper.PluginRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Method;
 
 public class GlobalInputListener implements NativeKeyListener {
 

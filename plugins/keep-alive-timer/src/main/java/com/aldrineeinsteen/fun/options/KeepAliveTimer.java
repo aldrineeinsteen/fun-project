@@ -49,7 +49,6 @@ public class KeepAliveTimer implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("inside");
         if (robot == null || endTime == null || displayMode == null) {
             logger.error("KeepAliveTimer is not properly initialized");
             return;
