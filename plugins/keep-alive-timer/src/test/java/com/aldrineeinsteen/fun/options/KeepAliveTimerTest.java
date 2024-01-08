@@ -18,8 +18,8 @@ public class KeepAliveTimerTest {
     final DisplayModeWrapper displayMode = new DisplayModeWrapper(800, 800);
 
     @Test
-    public void testRun() {
-        KeepAliveTimer keepAliveTimer = new KeepAliveTimer(LocalTime.now().plusSeconds(1), robot, displayMode);
+    public void testRun() throws AWTException {
+        KeepAliveTimer keepAliveTimer = new KeepAliveTimer(LocalTime.now().plusSeconds(1));
         keepAliveTimer.run();
 
         verify(robot, atLeastOnce()).delay(anyInt());

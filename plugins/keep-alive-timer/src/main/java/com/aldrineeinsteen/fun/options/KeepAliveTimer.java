@@ -13,22 +13,21 @@ public class KeepAliveTimer implements Runnable {
 
     private int delayMilliseconds = DEFAULT_DELAY_MILLISECONDS;
     private LocalTime endTime;
-    private Robot robot;
-    private DisplayModeWrapper displayMode;
+    private Robot robot = new Robot();
+    GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    private DisplayModeWrapper displayMode = new DisplayModeWrapper(gd.getDisplayMode());
 
-    public KeepAliveTimer() {
-        // Default constructor for plugin initialization
+    public KeepAliveTimer() throws AWTException {
+        this(DEFAULT_DELAY_MILLISECONDS, LocalTime.parse("17:30"));
     }
 
-    public KeepAliveTimer(LocalTime endTime, Robot robot, DisplayModeWrapper displayMode) {
-        this(DEFAULT_DELAY_MILLISECONDS, endTime, robot, displayMode);
+    public KeepAliveTimer(LocalTime endTime) throws AWTException {
+        this(DEFAULT_DELAY_MILLISECONDS, endTime);
     }
 
-    public KeepAliveTimer(int delayMilliseconds, LocalTime endTime, Robot robot, DisplayModeWrapper displayMode) {
+    public KeepAliveTimer(int delayMilliseconds, LocalTime endTime) throws AWTException {
         this.delayMilliseconds = delayMilliseconds;
         this.endTime = endTime;
-        this.robot = robot;
-        this.displayMode = displayMode;
     }
 
     // Setter methods
@@ -50,6 +49,7 @@ public class KeepAliveTimer implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("inside");
         if (robot == null || endTime == null || displayMode == null) {
             logger.error("KeepAliveTimer is not properly initialized");
             return;

@@ -1,6 +1,7 @@
 package com.aldrineeinsteen.fun;
 
 import com.aldrineeinsteen.fun.options.GlobalInputListener;
+import com.aldrineeinsteen.fun.options.PluginTemplate;
 import com.aldrineeinsteen.fun.options.helper.PluginRepository;
 import org.apache.commons.cli.*;
 import org.jline.terminal.Terminal;
@@ -42,7 +43,8 @@ public class Main {
 
         // Execute the action for each loaded plugin if needed
         pluginRepository.getLoadedPlugins().forEach(pluginName -> {
-            Object plugin = PluginRepository.getPlugin(pluginName);
+            //Object plugin = PluginRepository.getPlugin(pluginName);
+            Runnable plugin = PluginRepository.getUtility(pluginName);
             if (plugin instanceof Runnable) {
                 new Thread((Runnable) plugin).start();
             }

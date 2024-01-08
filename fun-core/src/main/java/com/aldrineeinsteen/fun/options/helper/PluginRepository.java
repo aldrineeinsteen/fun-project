@@ -19,6 +19,7 @@ public class PluginRepository {
 
     // New addition: Map to hold plugin instances
     private static final Map<String, PluginTemplate> plugins = new HashMap<>();
+    private static final Map<String, Runnable> utilities = new HashMap<>();
     private static final Set<String> loadedPlugins = new HashSet<>();
 
     public static void addLoadedPlugin(String pluginName) {
@@ -32,10 +33,14 @@ public class PluginRepository {
     // New addition: Methods for plugin registry
     public static void registerPlugin(String name, PluginTemplate pluginInstance) {
         plugins.put(name, pluginInstance);
+    }public static void registerUtility(String name, Runnable instance) {
+        utilities.put(name, instance);
     }
 
     public static PluginTemplate getPlugin(String name) {
         return plugins.get(name);
+    } public static Runnable getUtility(String name) {
+        return utilities.get(name);
     }
 
     // A class to hold shortcut and plugin information
@@ -131,7 +136,10 @@ public class PluginRepository {
                 registerPlugin(className, (PluginTemplate) pluginInstance);
                 logger.debug("Registered plugin: {}", className);
             } else {
-                logger.error("Class {} does not implement the Plugin interface", className);
+                logger.info("Class {} does not implement the Plugin interface", className);
+                if(pluginInstance instanceof Runnable){
+                    registerUtility(className, (Runnable) pluginInstance);
+                }
             }
         } catch (Exception e) {
             logger.error("Error instantiating plugin: {}", className, e);

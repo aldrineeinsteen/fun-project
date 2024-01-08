@@ -8,5 +8,5 @@ option:
     hasArguments: false
     required: false
 shortcuts:
-  - key: "CTRL + SHIFT + ALT + A"
+  - key: "CTRL + SHIFT + ALT + S"
     action: "getRandomSignature"
