@@ -9,34 +9,59 @@ import java.time.LocalTime;
 
 public class KeepAliveTimer implements Runnable {
     private final static Logger logger = LoggerFactory.getLogger(KeepAliveTimer.class);
+    private static final int DEFAULT_DELAY_MILLISECONDS = 30 * 1000;
 
-    //private static final int DELAY_MILLISECONDS = 1000;
-    private final int DELAY_MILLISECONDS;
+    private int delayMilliseconds = DEFAULT_DELAY_MILLISECONDS;
+    private LocalTime endTime;
+    private Robot robot;
+    private DisplayModeWrapper displayMode;
 
-    private final LocalTime endTime;
-    private final Robot robot;
-    private final DisplayModeWrapper displayMode;
-
-    public KeepAliveTimer(LocalTime endTime, Robot robot, DisplayModeWrapper displayMode) {
-        this(30 * 1000, endTime, robot, displayMode);
+    public KeepAliveTimer() {
+        // Default constructor for plugin initialization
     }
 
-    public KeepAliveTimer(Integer delayMilliseconds, LocalTime endTime, Robot robot, DisplayModeWrapper displayMode) {
-        this.DELAY_MILLISECONDS = delayMilliseconds;
+    public KeepAliveTimer(LocalTime endTime, Robot robot, DisplayModeWrapper displayMode) {
+        this(DEFAULT_DELAY_MILLISECONDS, endTime, robot, displayMode);
+    }
+
+    public KeepAliveTimer(int delayMilliseconds, LocalTime endTime, Robot robot, DisplayModeWrapper displayMode) {
+        this.delayMilliseconds = delayMilliseconds;
         this.endTime = endTime;
         this.robot = robot;
         this.displayMode = displayMode;
     }
 
+    // Setter methods
+    public void setDelayMilliseconds(int delayMilliseconds) {
+        this.delayMilliseconds = delayMilliseconds;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setRobot(Robot robot) {
+        this.robot = robot;
+    }
+
+    public void setDisplayMode(DisplayModeWrapper displayMode) {
+        this.displayMode = displayMode;
+    }
+
     @Override
     public void run() {
+        if (robot == null || endTime == null || displayMode == null) {
+            logger.error("KeepAliveTimer is not properly initialized");
+            return;
+        }
+
         int screenHeight = displayMode.getHeight() - 1;
         int screenWidth = displayMode.getWidth() - 1;
 
         logger.info("Current screen resolution - {}x{}p", displayMode.getWidth(), displayMode.getHeight());
 
         while (LocalTime.now().isBefore(endTime)) {
-            robot.delay(DELAY_MILLISECONDS);
+            robot.delay(delayMilliseconds);
 
             PointerInfo pointerInfo = MouseInfo.getPointerInfo();
             int xPosition = pointerInfo.getLocation().x;

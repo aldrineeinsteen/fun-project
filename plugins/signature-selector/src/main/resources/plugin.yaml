@@ -1,5 +1,5 @@
 name: SignatureSelector
-pluginClass: com.aldrineeinsteen.fun.options.plugins.SignatureSelector
+pluginClass: com.aldrineeinsteen.fun.options.SignatureSelector
 options:
   - shortOpt: sign
     name: Signature
@@ -9,4 +9,4 @@ options:
     required: false
 shortcuts:
   - key: "CTRL + SHIFT + ALT + A"
-    action: "executeAction"
+    action: "getRandomSignature"

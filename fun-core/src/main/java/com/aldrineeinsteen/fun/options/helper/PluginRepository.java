@@ -3,8 +3,6 @@ package com.aldrineeinsteen.fun.options.helper;
 import com.aldrineeinsteen.fun.options.PluginTemplate;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import com.github.kwhat.jnativehook.NativeInputEvent;
-import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -21,6 +19,15 @@ public class PluginRepository {
 
     // New addition: Map to hold plugin instances
     private static final Map<String, Object> plugins = new HashMap<>();
+    private static final Set<String> loadedPlugins = new HashSet<>();
+
+    public static void addLoadedPlugin(String pluginName) {
+        loadedPlugins.add(pluginName);
+    }
+
+    public static Set<String> getLoadedPlugins() {
+        return loadedPlugins;
+    }
 
     // New addition: Methods for plugin registry
     public static void registerPlugin(String name, Object pluginInstance) {
@@ -36,9 +43,19 @@ public class PluginRepository {
         private String action;
         private String plugin;
 
+        @Override
+        public String toString() {
+            return "ShortcutAction{" +
+                    "action='" + action + '\'' +
+                    ", plugin='" + plugin + '\'' +
+                    '}';
+        }
+
         public ShortcutAction(String action, String plugin) {
             this.action = action;
             this.plugin = plugin;
+
+
         }
 
         // Getters
@@ -94,10 +111,11 @@ public class PluginRepository {
             String pluginClassName = (String) yamlData.get("pluginClass");
             if (pluginClassName != null) {
                 instantiateAndRegisterPlugin(pluginClassName);
+                addLoadedPlugin(pluginClassName);
             }
 
             parseOptions(yamlData);
-            parseShortcuts(yamlData);
+            parseShortcuts(pluginClassName, yamlData);
         } catch (IOException e) {
             logger.error("Error parsing plugin.yaml: ", e);
         }
@@ -130,52 +148,14 @@ public class PluginRepository {
         }
     }
 
-    private void parseShortcuts(Map<String, Object> yamlData) {
+    private void parseShortcuts(String pluginClassName, Map<String, Object> yamlData) {
         List<Map<String, String>> shortcuts = (List<Map<String, String>>) yamlData.get("shortcuts");
         if (shortcuts != null) {
             for (Map<String, String> shortcut : shortcuts) {
                 String keyCombination = shortcut.get("key");
                 String action = shortcut.get("action");
-                String plugin = shortcut.get("plugin"); // Assuming 'plugin' is part of your yaml
-                shortcutActions.put(keyCombination, new ShortcutAction(action, plugin));
+                shortcutActions.put(keyCombination, new ShortcutAction(action, pluginClassName));
             }
-        }
-    }
-
-    private static int convertStringToKeyCode(String keyStrokeString) {
-        int modifiers = 0;
-        int keyCode = 0;
-        for (String keyPart : keyStrokeString.split("\\s+\\+\\s+")) {
-            switch (keyPart.toUpperCase()) {
-                case "CTRL":
-                    modifiers |= NativeInputEvent.CTRL_MASK;
-                    break;
-                case "SHIFT":
-                    modifiers |= NativeInputEvent.SHIFT_MASK;
-                    break;
-                case "ALT":
-                    modifiers |= NativeInputEvent.ALT_MASK;
-                    break;
-                default:
-                    keyCode = javaKeyToNativeKey(keyPart);
-                    break;
-            }
-        }
-        return keyCode | modifiers;
-    }
-
-    private static int javaKeyToNativeKey(String keyPart) {
-        // Example mapping
-        switch (keyPart.toUpperCase()) {
-            case "A":
-                return NativeKeyEvent.VC_A;
-            case "B":
-                return NativeKeyEvent.VC_B;
-            case "S":
-                return NativeKeyEvent.VC_S;
-            // ... other key mappings
-            default:
-                return NativeKeyEvent.VC_UNDEFINED;
         }
     }
 }

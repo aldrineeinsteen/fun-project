@@ -77,10 +77,10 @@ public class GlobalInputListener implements NativeKeyListener {
                 return;
             }
 
-            // Assuming the method to be invoked has no parameters
-            Method method = plugin.getClass().getDeclaredMethod(action);
+            // Assuming the method to be invoked has a single String parameter
+            Method method = plugin.getClass().getDeclaredMethod("executeAction", String.class);
             method.setAccessible(true);
-            method.invoke(plugin);
+            method.invoke(plugin, action);
         } catch (NoSuchMethodException e) {
             logger.error("Method not found: {}", action, e);
         } catch (Exception e) {

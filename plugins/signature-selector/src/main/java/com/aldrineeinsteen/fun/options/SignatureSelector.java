@@ -1,7 +1,5 @@
 package com.aldrineeinsteen.fun.options;
 
-import com.sun.source.util.JavacTask;
-import com.sun.source.util.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -24,49 +22,67 @@ public class SignatureSelector implements PluginTemplate {
     private final ClipboardOwner clipboardOwner = null;
 
     public SignatureSelector() {
-        Yaml yaml = new Yaml();
-        InputStream signatureFile = getClass().getClassLoader().getResourceAsStream("signatures.yaml");
-        Map<String, Object> yamlData = yaml.load(signatureFile);
-        Object options = yamlData.get("options");
-        if (options instanceof List) {
-            List<?> list = (List<?>) options;
-            if (!list.isEmpty() && list.get(0) instanceof Map) {
-                List<Signature> signatures = list.stream()
-                        .map(option -> {
-                            Map<String, Object> map = (Map<String, Object>) option;
-                            return new Signature(map.get("signature").toString(),
-                                    map.get("tag").toString(),
-                                    Double.parseDouble(map.get("weight").toString()));
-                        })
-                        .collect(Collectors.toList());
+        loadSignatures();
+    }
 
-                // Populate the weightedSignatures list based on the weights
-                for (Signature signature : signatures) {
-                    int weight = (int) (signature.getWeight() * 10); // Assuming weight is a double
-                    weightedSignatures.addAll(Collections.nCopies(weight, signature));
-                }
-
-            } else {
-                logger.error("list is either not an instance of Map or is Empty");
+    private void loadSignatures() {
+        try {
+            Yaml yaml = new Yaml();
+            InputStream signatureFile = getClass().getClassLoader().getResourceAsStream("signatures.yaml");
+            if (signatureFile == null) {
+                logger.error("Cannot find 'signatures.yaml' file");
+                return;
             }
-        } else {
-            logger.error("Options is not an instance of List.");
+
+            Map<String, Object> yamlData = yaml.load(signatureFile);
+            List<?> options = (List<?>) yamlData.get("options");
+            processSignatureOptions(options);
+        } catch (Exception e) {
+            logger.error("Error loading signatures: ", e);
+        }
+    }
+
+    private void processSignatureOptions(List<?> options) {
+        if (options == null || options.isEmpty() || !(options.get(0) instanceof Map)) {
+            logger.error("Signature options are not properly configured");
+            return;
+        }
+
+        List<Signature> signatures = options.stream()
+                .map(option -> {
+                    Map<?, ?> map = (Map<?, ?>) option;
+                    return new Signature(
+                            map.get("signature").toString(),
+                            map.get("tag").toString(),
+                            Double.parseDouble(map.get("weight").toString())
+                    );
+                })
+                .collect(Collectors.toList());
+
+        // Populate the weightedSignatures list
+        for (Signature signature : signatures) {
+            int weight = (int) (signature.getWeight() * 10); // Assuming weight is a double
+            weightedSignatures.addAll(Collections.nCopies(weight, signature));
         }
     }
 
     public String getRandomSignature() {
-        if (!weightedSignatures.isEmpty()) {
-            String selectedSignature = weightedSignatures.get(random.nextInt(weightedSignatures.size())).getText();
-            clipboard.setContents(new StringSelection(selectedSignature), clipboardOwner);
-            return selectedSignature;
-        } else {
+        if (weightedSignatures.isEmpty()) {
             logger.error("The Signature collection is empty");
+            return null;
         }
-        return null;
+
+        String selectedSignature = weightedSignatures.get(random.nextInt(weightedSignatures.size())).getText();
+        clipboard.setContents(new StringSelection(selectedSignature), clipboardOwner);
+        return selectedSignature;
     }
 
     @Override
     public void executeAction(String actionName) {
-        getRandomSignature();
+        if ("getRandomSignature".equals(actionName)) {
+            getRandomSignature();
+        } else {
+            logger.error("Unrecognized action: {}", actionName);
+        }
     }
 }
