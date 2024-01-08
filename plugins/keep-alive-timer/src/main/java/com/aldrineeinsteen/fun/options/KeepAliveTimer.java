@@ -13,9 +13,9 @@ public class KeepAliveTimer extends UtilityTemplate {
 
     private int delayMilliseconds = DEFAULT_DELAY_MILLISECONDS;
     private LocalTime endTime;
-    private Robot robot = new Robot();
+    private final Robot robot = new Robot();
     GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-    private DisplayModeWrapper displayMode = new DisplayModeWrapper(gd.getDisplayMode());
+    private final DisplayModeWrapper displayMode = new DisplayModeWrapper(gd.getDisplayMode());
 
     public KeepAliveTimer() throws AWTException {
         this(DEFAULT_DELAY_MILLISECONDS, LocalTime.parse("17:30"));
@@ -31,7 +31,7 @@ public class KeepAliveTimer extends UtilityTemplate {
     }
 
     // Setter methods
-    public void setDelayMilliseconds(int delayMilliseconds) {
+    /*public void setDelayMilliseconds(int delayMilliseconds) {
         this.delayMilliseconds = delayMilliseconds;
     }
 
@@ -45,7 +45,7 @@ public class KeepAliveTimer extends UtilityTemplate {
 
     public void setDisplayMode(DisplayModeWrapper displayMode) {
         this.displayMode = displayMode;
-    }
+    }*/
 
     public void runUtility() {
         if (robot == null || endTime == null || displayMode == null) {
@@ -81,6 +81,6 @@ public class KeepAliveTimer extends UtilityTemplate {
 
     @Override
     protected void logStart() {
-        logger.info("Starting utility: {}", this.getClass());
+        logger.info("Utility: '{}' started successfully", KeepAliveTimer.class.getSimpleName());
     }
 }

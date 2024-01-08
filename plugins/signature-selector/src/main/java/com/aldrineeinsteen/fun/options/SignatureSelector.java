@@ -22,6 +22,7 @@ public class SignatureSelector implements PluginTemplate {
     private final ClipboardOwner clipboardOwner = null;
 
     public SignatureSelector() {
+        logger.info("Plugin: '{}' initialised successfully", SignatureSelector.class.getSimpleName());
         loadSignatures();
     }
 
@@ -48,16 +49,10 @@ public class SignatureSelector implements PluginTemplate {
             return;
         }
 
-        List<Signature> signatures = options.stream()
-                .map(option -> {
-                    Map<?, ?> map = (Map<?, ?>) option;
-                    return new Signature(
-                            map.get("signature").toString(),
-                            map.get("tag").toString(),
-                            Double.parseDouble(map.get("weight").toString())
-                    );
-                })
-                .collect(Collectors.toList());
+        List<Signature> signatures = options.stream().map(option -> {
+            Map<?, ?> map = (Map<?, ?>) option;
+            return new Signature(map.get("signature").toString(), map.get("tag").toString(), Double.parseDouble(map.get("weight").toString()));
+        }).collect(Collectors.toList());
 
         // Populate the weightedSignatures list
         for (Signature signature : signatures) {
