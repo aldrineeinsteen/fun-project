@@ -74,6 +74,7 @@ public class SignatureSelector implements PluginTemplate {
 
         String selectedSignature = weightedSignatures.get(random.nextInt(weightedSignatures.size())).getText();
         clipboard.setContents(new StringSelection(selectedSignature), clipboardOwner);
+        logger.info("Random signature selected and copied into the clipboard: {}", selectedSignature);
         return selectedSignature;
     }
 

@@ -139,7 +139,7 @@ public class PluginRepository {
     }
 
     private void parseOptions(Map<String, Object> yamlData) {
-        ArrayList<Map<String, Object>> commandOptions = (ArrayList<Map<String, Object>>) yamlData.get("options");
+        ArrayList<Map<String, Object>> commandOptions = (ArrayList<Map<String, Object>>) yamlData.get("option");
         if (commandOptions != null) {
             for (Map<String, Object> command : commandOptions) {
                 Option option = Option.builder((String) command.get("shortOpt")).hasArg((boolean) command.get("hasArguments")).longOpt((String) command.get("longOpt")).desc((String) command.get("description")).build();
