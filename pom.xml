@@ -9,6 +9,7 @@
     <modules>
         <module>fun-core</module>
         <module>plugins</module>
+        <module>plugins/plugin-core</module>
     </modules>
 
     <properties>

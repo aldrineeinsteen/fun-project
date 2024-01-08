@@ -1,4 +1,5 @@
 name: SignatureSelector
+pluginClass: com.aldrineeinsteen.fun.options.plugins.SignatureSelector
 options:
   - shortOpt: sign
     name: Signature

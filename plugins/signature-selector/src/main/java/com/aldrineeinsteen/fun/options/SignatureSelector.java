@@ -1,5 +1,7 @@
 package com.aldrineeinsteen.fun.options;
 
+import com.sun.source.util.JavacTask;
+import com.sun.source.util.Plugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -13,7 +15,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SignatureSelector {
+public class SignatureSelector implements PluginTemplate {
 
     private final static Logger logger = LoggerFactory.getLogger(SignatureSelector.class);
     private final Random random = new Random();
@@ -61,5 +63,10 @@ public class SignatureSelector {
             logger.error("The Signature collection is empty");
         }
         return null;
+    }
+
+    @Override
+    public void executeAction(String actionName) {
+        getRandomSignature();
     }
 }

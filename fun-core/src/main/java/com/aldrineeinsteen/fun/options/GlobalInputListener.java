@@ -10,6 +10,8 @@ import com.aldrineeinsteen.fun.options.helper.PluginRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
+
 public class GlobalInputListener implements NativeKeyListener {
 
     private final static Logger logger = LoggerFactory.getLogger(GlobalInputListener.class);
@@ -28,11 +30,12 @@ public class GlobalInputListener implements NativeKeyListener {
         String keyCombination = getKeyCombination(e);
         logger.debug("Key pressed: {}", keyCombination);
 
-        // Check if this combination is a registered shortcut
-        String action = PluginRepository.getShortcutActions().get(keyCombination);
-        if (action != null) {
-            logger.debug("Executing action: {}", action);
-            // Execute the action
+        // Retrieve the ShortcutAction object
+        PluginRepository.ShortcutAction actionInfo = PluginRepository.getShortcutActions().get(keyCombination);
+        if (actionInfo != null) {
+            logger.debug("Executing action: {} in plugin: {}", actionInfo.getAction(), actionInfo.getPlugin());
+            // Execute the action for the specific plugin
+            executePluginAction(actionInfo.getAction(), actionInfo.getPlugin());
         } else {
             logger.debug("No action registered for this key combination.");
         }
@@ -64,5 +67,24 @@ public class GlobalInputListener implements NativeKeyListener {
     @Override
     public void nativeKeyTyped(NativeKeyEvent e) {
         // Implement logic for key typed events
+    }
+
+    private void executePluginAction(String action, String pluginName) {
+        try {
+            Object plugin = PluginRepository.getPlugin(pluginName);
+            if (plugin == null) {
+                logger.error("Plugin not found: {}", pluginName);
+                return;
+            }
+
+            // Assuming the method to be invoked has no parameters
+            Method method = plugin.getClass().getDeclaredMethod(action);
+            method.setAccessible(true);
+            method.invoke(plugin);
+        } catch (NoSuchMethodException e) {
+            logger.error("Method not found: {}", action, e);
+        } catch (Exception e) {
+            logger.error("Error executing action: {}", action, e);
+        }
     }
 }

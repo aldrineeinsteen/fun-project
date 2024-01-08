@@ -1,4 +1,5 @@
 name: KeepAliveTimer
+pluginClass: com.aldrineeinsteen.fun.options.KeepAliveTimer
 options:
   - shortOpt: k
     name: Keep alive
