@@ -71,19 +71,14 @@ public class GlobalInputListener implements NativeKeyListener {
 
     private void executePluginAction(String action, String pluginName) {
         try {
-            Object plugin = PluginRepository.getPlugin(pluginName);
+            PluginTemplate plugin = PluginRepository.getPlugin(pluginName);
             if (plugin == null) {
                 logger.error("Plugin not found: {}", pluginName);
                 return;
             }
 
-            // Assuming the method to be invoked has a single String parameter
-            Method method = plugin.getClass().getDeclaredMethod("executeAction", String.class);
-            method.setAccessible(true);
-            method.invoke(plugin, action);
-        } catch (NoSuchMethodException e) {
-            logger.error("Method not found: {}", action, e);
-        } catch (Exception e) {
+            plugin.executeAction(action);
+        }  catch (Exception e) {
             logger.error("Error executing action: {}", action, e);
         }
     }

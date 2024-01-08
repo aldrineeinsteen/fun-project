@@ -18,7 +18,7 @@ public class PluginRepository {
     private final static Options options = new Options();
 
     // New addition: Map to hold plugin instances
-    private static final Map<String, Object> plugins = new HashMap<>();
+    private static final Map<String, PluginTemplate> plugins = new HashMap<>();
     private static final Set<String> loadedPlugins = new HashSet<>();
 
     public static void addLoadedPlugin(String pluginName) {
@@ -30,11 +30,11 @@ public class PluginRepository {
     }
 
     // New addition: Methods for plugin registry
-    public static void registerPlugin(String name, Object pluginInstance) {
+    public static void registerPlugin(String name, PluginTemplate pluginInstance) {
         plugins.put(name, pluginInstance);
     }
 
-    public static Object getPlugin(String name) {
+    public static PluginTemplate getPlugin(String name) {
         return plugins.get(name);
     }
 
