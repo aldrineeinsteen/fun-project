@@ -9,5 +9,13 @@
     </parent>
 
     <artifactId>keep-alive-timer</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>com.aldrineeinsteen</groupId>
+            <artifactId>utility-core</artifactId>
+            <version>1.2.7-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
 </project>

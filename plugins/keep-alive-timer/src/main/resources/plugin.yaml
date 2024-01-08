@@ -1,11 +1,13 @@
 name: KeepAliveTimer
-options:
+pluginClass: com.aldrineeinsteen.fun.options.KeepAliveTimer
+option:
   - shortOpt: k
     name: Keep alive
     longOpt: keep-alive
     description: Run the KeepAlive timer.
     hasArguments: false
     required: false
+params:
   - shortOpt: e
     name: End time
     longOpt: end-time

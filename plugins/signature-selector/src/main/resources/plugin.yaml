@@ -1,8 +1,12 @@
 name: SignatureSelector
-options:
+pluginClass: com.aldrineeinsteen.fun.options.SignatureSelector
+option:
   - shortOpt: sign
     name: Signature
     longOpt: signature
     description: Weighted signature selector.
     hasArguments: false
     required: false
+shortcuts:
+  - key: "CTRL + SHIFT + ALT + S"
+    action: "getRandomSignature"
