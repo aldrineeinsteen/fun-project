@@ -1,5 +1,6 @@
 package com.aldrineeinsteen.fun;
 
+import com.aldrineeinsteen.fun.options.GlobalInputListener;
 import com.aldrineeinsteen.fun.options.KeepAliveTimer;
 import com.aldrineeinsteen.fun.options.SignatureSelector;
 import com.aldrineeinsteen.fun.options.helper.DisplayModeWrapper;
@@ -34,7 +35,9 @@ public class Main {
 
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
+        GlobalInputListener globalInputListener = new GlobalInputListener();
         CommandLine cmd;
+        globalInputListener.registerHook();
 
         try {
             cmd = parser.parse(PluginRepository.getOptions(), args);

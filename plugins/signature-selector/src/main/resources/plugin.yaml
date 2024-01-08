@@ -6,3 +6,6 @@ options:
     description: Weighted signature selector.
     hasArguments: false
     required: false
+shortcuts:
+  - key: "CTRL + SHIFT + ALT + A"
+    action: "executeAction"
