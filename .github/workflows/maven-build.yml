@@ -27,6 +27,9 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
+      - name: Install libxkbcommon-x11
+        run: sudo apt-get update && sudo apt-get install -y libxkbcommon-x11-0
+
       - name: Clean and Build with Maven
         uses: GabrielBB/xvfb-action@v1
         with:
