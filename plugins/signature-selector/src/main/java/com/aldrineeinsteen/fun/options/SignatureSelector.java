@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SignatureSelector implements PluginTemplate {
-
+public class SignatureSelector extends PluginTemplate {
     private final static Logger logger = LoggerFactory.getLogger(SignatureSelector.class);
     private final Random random = new Random();
     private final List<Signature> weightedSignatures = new ArrayList<>();

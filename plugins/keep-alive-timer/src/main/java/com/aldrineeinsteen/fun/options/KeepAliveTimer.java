@@ -8,6 +8,7 @@ import java.awt.*;
 import java.time.LocalTime;
 
 public class KeepAliveTimer extends UtilityTemplate {
+    private static KeepAliveTimer instance; //used for singleton design pattern
     private final static Logger logger = LoggerFactory.getLogger(KeepAliveTimer.class);
     private static final int DEFAULT_DELAY_MILLISECONDS = 30 * 1000;
 
@@ -28,6 +29,19 @@ public class KeepAliveTimer extends UtilityTemplate {
     public KeepAliveTimer(int delayMilliseconds, LocalTime endTime) throws AWTException {
         this.delayMilliseconds = delayMilliseconds;
         this.endTime = endTime;
+    }
+
+    // Public method to get the instance
+    public static synchronized KeepAliveTimer getInstance() {
+        if (instance == null) {
+            try {
+                instance = new KeepAliveTimer();
+            } catch (AWTException e) {
+                // Handle the exception
+                e.printStackTrace();
+            }
+        }
+        return instance;
     }
 
     // Setter methods

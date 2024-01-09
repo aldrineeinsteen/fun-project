@@ -33,13 +33,17 @@ public class PluginRepository {
     // New addition: Methods for plugin registry
     public static void registerPlugin(String name, PluginTemplate pluginInstance) {
         plugins.put(name, pluginInstance);
-    }public static void registerUtility(String name, Runnable instance) {
+    }
+
+    public static void registerUtility(String name, Runnable instance) {
         utilities.put(name, instance);
     }
 
     public static PluginTemplate getPlugin(String name) {
         return plugins.get(name);
-    } public static Runnable getUtility(String name) {
+    }
+
+    public static Runnable getUtility(String name) {
         return utilities.get(name);
     }
 
@@ -129,18 +133,19 @@ public class PluginRepository {
     private void instantiateAndRegisterPlugin(String className) {
         try {
             Class<?> clazz = Thread.currentThread().getContextClassLoader().loadClass(className);
-            Constructor<?> constructor = clazz.getConstructor();
-            Object pluginInstance = constructor.newInstance();
 
-            if (pluginInstance instanceof PluginTemplate) {
-                registerPlugin(className, (PluginTemplate) pluginInstance);
+            if (PluginTemplate.class.isAssignableFrom(clazz)) {
+                // Cast to PluginTemplate class and get the instance
+                PluginTemplate pluginInstance = PluginTemplate.getInstance(clazz.asSubclass(PluginTemplate.class));
+                registerPlugin(className, pluginInstance);
                 logger.info("Registered plugin: {}", className);
+            } else if (Runnable.class.isAssignableFrom(clazz)) {
+                // Handle Runnable utilities that are not PluginTemplates
+                Runnable utilityInstance = (Runnable) clazz.getDeclaredConstructor().newInstance();
+                registerUtility(className, utilityInstance);
+                logger.info("Registered utility: {}", className);
             } else {
-                logger.info("Class {} does not implement the Plugin interface", className);
-                if(pluginInstance instanceof Runnable){
-                    registerUtility(className, (Runnable) pluginInstance);
-                    logger.info("Registered utility: {}", className);
-                }
+                logger.error("Class {} does not implement the Plugin interface or Runnable", className);
             }
         } catch (Exception e) {
             logger.error("Error instantiating plugin: {}", className, e);
