@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
@@ -52,7 +54,6 @@ public class Main {
         }
 
         if (cmd.hasOption("keep-alive")) {
-
             int seconds = 30;
             LocalTime endTime = LocalTime.of(17, 0);  // default end time
             if (cmd.hasOption("end-time")) {
@@ -64,20 +65,27 @@ public class Main {
                 }
             }
 
-            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+            // Create a list of DisplayModeWrapper for each screen
+            GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+            List<DisplayModeWrapper> displayModes = new ArrayList<>();
+            for (GraphicsDevice device : devices) {
+                displayModes.add(new DisplayModeWrapper(device.getDisplayMode(), device));
+            }
+
             KeepAliveTimer keepAliveTimer;
             if (cmd.hasOption("seconds")) {
                 keepAliveTimer = new KeepAliveTimer(
                         seconds * 1000,
                         endTime,
                         robot,
-                        new DisplayModeWrapper(gd.getDisplayMode())
+                        displayModes
                 );
             } else {
                 keepAliveTimer = new KeepAliveTimer(
+                        1000,
                         endTime,
                         robot,
-                        new DisplayModeWrapper(gd.getDisplayMode())
+                        displayModes
                 );
             }
             Thread keepAliveThread = new Thread(keepAliveTimer);

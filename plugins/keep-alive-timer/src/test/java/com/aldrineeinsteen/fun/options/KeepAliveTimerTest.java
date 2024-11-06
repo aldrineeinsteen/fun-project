@@ -8,6 +8,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.awt.*;
 import java.time.LocalTime;
+import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -15,13 +17,22 @@ import static org.mockito.Mockito.*;
 public class KeepAliveTimerTest {
 
     final Robot robot = Mockito.mock(Robot.class);
-    final DisplayModeWrapper displayMode = new DisplayModeWrapper(800, 800);
+    final DisplayModeWrapper displayMode = Mockito.mock(DisplayModeWrapper.class);
 
     @Test
     public void testRun() {
-        KeepAliveTimer keepAliveTimer = new KeepAliveTimer(LocalTime.now().plusSeconds(1), robot, displayMode);
+        // Mock display mode behavior
+        when(displayMode.getWidth()).thenReturn(800);
+        when(displayMode.getHeight()).thenReturn(800);
+
+        // Create a list of display modes
+        List<DisplayModeWrapper> displayModes = Collections.singletonList(displayMode);
+
+        // Initialize KeepAliveTimer with the list of display modes
+        KeepAliveTimer keepAliveTimer = new KeepAliveTimer(100, LocalTime.now().plusSeconds(1), robot, displayModes);
         keepAliveTimer.run();
 
+        // Verify that the delay and mouseMove were called at least once
         verify(robot, atLeastOnce()).delay(anyInt());
         verify(robot, atLeastOnce()).mouseMove(anyInt(), anyInt());
     }
