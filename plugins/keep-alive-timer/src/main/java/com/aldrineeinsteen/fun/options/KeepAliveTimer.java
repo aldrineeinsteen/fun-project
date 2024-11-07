@@ -33,8 +33,12 @@ public class KeepAliveTimer implements Runnable {
         GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 
         for (GraphicsDevice device : devices) {
-            DisplayMode mode = device.getDisplayMode();
-            displayModes.add(new DisplayModeWrapper(mode, device)); // Pass both DisplayMode and GraphicsDevice
+            if (device != null) { // Check if the device is not null
+                DisplayMode mode = device.getDisplayMode();
+                displayModes.add(new DisplayModeWrapper(mode, device));
+            } else {
+                logger.warn("Null GraphicsDevice encountered and skipped.");
+            }
         }
         return displayModes;
     }
