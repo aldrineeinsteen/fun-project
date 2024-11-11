@@ -82,7 +82,7 @@ public class Main {
                 );
             } else {
                 keepAliveTimer = new KeepAliveTimer(
-                        1000,
+                        seconds * 1000,
                         endTime,
                         robot,
                         displayModes

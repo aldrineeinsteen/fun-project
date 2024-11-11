@@ -58,6 +58,8 @@ public class KeepAliveTimer implements Runnable {
     public void run() {
         int screenIndex = 0;
         logger.info("Number of screens detected: {}", displayModes.size());
+        int pXPosition = 0;
+        int pYPosition = 0;
 
         while (LocalTime.now().isBefore(endTime)) {
             robot.delay(DELAY_MILLISECONDS);
@@ -73,18 +75,22 @@ public class KeepAliveTimer implements Runnable {
             int xPosition = location.x;
             int yPosition = location.y;
 
-            if (xPosition < screenWidth && yPosition < screenHeight) {
-                int increment = xPosition % 2 == 0 ? 1 : -1;
-                xPosition += increment;
-                yPosition += increment;
-            } else {
-                xPosition = 0;
-                yPosition = 0;
+            if (xPosition == pXPosition && yPosition == pYPosition) {
+                if (xPosition < screenWidth && yPosition < screenHeight) {
+                    int increment = ((xPosition % 2) == 0) ? 1 : -1;
+                    xPosition += increment;
+                    yPosition += increment;
+                } else {
+                    xPosition = 0;
+                    yPosition = 0;
+                }
             }
 
             // Move the cursor only if it's currently on the active screen
             if (currentDisplay.getDevice().getDefaultConfiguration().getBounds().contains(location)) {
                 robot.mouseMove(xPosition, yPosition);
+                pXPosition = xPosition;
+                pYPosition = yPosition;
                 logger.info("Updated position on screen index {} - {}, {}", screenIndex, xPosition, yPosition);
             } else {
                 logger.info("Cursor is not on the active screen index {}. No movement applied.", screenIndex);
