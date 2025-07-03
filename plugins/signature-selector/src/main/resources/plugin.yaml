@@ -1,8 +1,18 @@
-name: SignatureSelector
-options:
-  - shortOpt: sign
-    name: Signature
-    longOpt: signature
-    description: Weighted signature selector.
-    hasArguments: false
-    required: false
+---
+plugins:
+  - name: SignatureSelector
+    class: com.aldrineeinsteen.fun.options.SignatureSelector
+    enablerOptions:
+      - shortOpt: s
+        name: signature selector
+        longOpt: signature
+        description: Run the Signature Selector.
+        hasArguments: false
+        required: false
+    options:
+      - shortOpt: sign
+        name: Signature
+        longOpt: signature
+        description: Weighted signature selector.
+        hasArguments: false
+        required: false

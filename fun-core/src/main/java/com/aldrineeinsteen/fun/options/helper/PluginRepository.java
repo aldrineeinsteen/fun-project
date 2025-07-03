@@ -1,66 +1,97 @@
 package com.aldrineeinsteen.fun.options.helper;
 
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.aldrineeinsteen.fun.Main;
+import org.apache.commons.cli.*;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PluginRepository {
-    private final static Logger logger = LoggerFactory.getLogger(PluginRepository.class);
-    private final static Options options = new Options();
 
-    public static Options getOptions() {
+    private final Map<String, PluginConfig> plugins = new HashMap<>();
+
+    private static final Logger logger = LoggerFactory.getLogger(PluginRepository.class);
+
+    public void init() {
+        Yaml yaml = new Yaml();
+        List<Map<String, Object>> allPlugins = new ArrayList<>(); // Combined plugins list
+
+        try {
+            // Use the class loader to find all resources named "plugin.yaml"
+            Enumeration<URL> resources = getClass().getClassLoader().getResources("plugin.yaml");
+
+            // Iterate over each found resource
+            while (resources.hasMoreElements()) {
+                URL resource = resources.nextElement();
+                try (InputStream in = resource.openStream()) {
+                    // Load the YAML data from the current resource
+                    Map<String, List<Map<String, Object>>> yamlData = yaml.load(in);
+                    List<Map<String, Object>> pluginList = yamlData.get("plugins");
+                    if (pluginList != null) {
+                        allPlugins.addAll(pluginList); // Add plugins to combined list
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // Process combined plugins
+            for (Map<String, Object> pluginData : allPlugins) {
+                PluginConfig pluginConfig = new PluginConfig(pluginData);
+                plugins.put(pluginConfig.getName(), pluginConfig);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Options getOptions() {
+        Options options = new Options();
+        for (PluginConfig pluginConfig : plugins.values()) {
+            for (PluginOption option : pluginConfig.getAllOptions()) {
+                options.addOption(option.toOption());
+            }
+        }
         return options;
     }
 
-    public void init() {
-        try {
+    public Map<String, PluginConfig> getActivePlugins(CommandLine cmd) {
+        Map<String, PluginConfig> activePlugins = new HashMap<>();
+        for (PluginConfig pluginConfig : plugins.values()) {
+            // Check if any enabler option is present to activate the plugin
+            boolean isActive = pluginConfig.getEnablerOptions().stream()
+                    .anyMatch(option -> cmd.hasOption(option.getShortOpt()) || cmd.hasOption(option.getLongOpt()));
 
-            List<URL> urls = new ArrayList<>();
-
-            try {
-                ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-                Enumeration<URL> resources = classLoader.getResources("plugin.yaml");
-
-                while (resources.hasMoreElements()) {
-                    URL url = resources.nextElement();
-                    urls.add(url);
-                }
-            } catch (IOException e) {
-                logger.error("Exception when loading the yaml: ", e);
+            if (isActive) {
+                activePlugins.put(pluginConfig.getName(), pluginConfig);
             }
-
-            for (URL url : urls) {
-                logger.debug("Found plugin.yaml in: {}", url.getPath());
-
-                try (InputStream is = url.openConnection().getInputStream()) {
-                    Yaml yaml = new Yaml();
-                    Map<String, Object> yamlData = yaml.load(is);
-
-                    ArrayList<Map<String, Object>> commandOptions = (ArrayList<Map<String, Object>>) yamlData.get("options");
-
-                    for (Map<String, Object> command : commandOptions) {
-                        Option option = Option.builder((String) command.get("shortOpt"))
-                                .hasArg((boolean) command.get("hasArguments"))
-                                .longOpt((String) command.get("longOpt"))
-                                .desc((String) command.get("description"))
-                                .build();
-                        options.addOption(option);
-                    }
-                }
-
-            }
-        } catch (Exception e) {
-            logger.error("Plugin initialisation has failed.", e);
         }
+        return activePlugins;
+    }
+
+    public Object createPluginInstance(String pluginName) throws Exception {
+        logger.info("Loading plugin: {}", pluginName);
+        PluginConfig pluginConfig = plugins.get(pluginName);
+        if (pluginConfig != null) {
+            String pluginConfigClassName = pluginConfig.getClassName();
+            logger.info("Trying to load {} based on plugin: {}", pluginConfigClassName, pluginName);
+            Class<?> clazz = Class.forName(pluginConfigClassName);
+            logger.info("Loaded {} successfully.", pluginConfigClassName);
+            return clazz.getDeclaredConstructor().newInstance();
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return plugins.toString();
     }
 }
