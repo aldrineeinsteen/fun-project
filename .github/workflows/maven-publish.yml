@@ -67,13 +67,27 @@ jobs:
           CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "Current version: $CURRENT_VERSION"
           
-          # Check if this version already has a git tag
-          if git tag -l | grep -q "^v${CURRENT_VERSION}$"; then
-            echo "Release v${CURRENT_VERSION} already exists, skipping release process"
-            echo "skip_release=true" >> $GITHUB_OUTPUT
+          # For SNAPSHOT versions, check if the release version (without -SNAPSHOT) already has a tag
+          if [[ "$CURRENT_VERSION" == *"-SNAPSHOT" ]]; then
+            RELEASE_VERSION=${CURRENT_VERSION%-SNAPSHOT}
+            echo "SNAPSHOT version detected, checking for release tag: v${RELEASE_VERSION}"
+            if git tag -l | grep -q "^v${RELEASE_VERSION}$"; then
+              echo "Release v${RELEASE_VERSION} already exists, skipping release process"
+              echo "skip_release=true" >> $GITHUB_OUTPUT
+            else
+              echo "Release v${RELEASE_VERSION} does not exist, proceeding with release"
+              echo "skip_release=false" >> $GITHUB_OUTPUT
+            fi
           else
-            echo "Release v${CURRENT_VERSION} does not exist, proceeding with release"
-            echo "skip_release=false" >> $GITHUB_OUTPUT
+            # For non-SNAPSHOT versions, check for exact version tag
+            echo "Release version detected, checking for exact tag: v${CURRENT_VERSION}"
+            if git tag -l | grep -q "^v${CURRENT_VERSION}$"; then
+              echo "Release v${CURRENT_VERSION} already exists, skipping release process"
+              echo "skip_release=true" >> $GITHUB_OUTPUT
+            else
+              echo "Release v${CURRENT_VERSION} does not exist, proceeding with release"
+              echo "skip_release=false" >> $GITHUB_OUTPUT
+            fi
           fi
 
       - name: Log release skip
