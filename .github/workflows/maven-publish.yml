@@ -22,8 +22,8 @@ jobs:
   prepare:
     name: Prepare Release
     runs-on: ubuntu-latest
-    # Only run if PR was merged and not a Maven release plugin commit
-    if: ${{ github.event.pull_request.merged == true && !contains(github.event.pull_request.title, '[maven-release-plugin]') }}
+    # Run if: manually triggered OR (PR was merged and not a Maven release plugin commit)
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && !contains(github.event.pull_request.title, '[maven-release-plugin]')) }}
     permissions:
       contents: write
       packages: write
