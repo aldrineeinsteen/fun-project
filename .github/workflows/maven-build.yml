@@ -36,6 +36,7 @@ jobs:
           run: mvn -B clean package --file pom.xml
 
       - name: Publish to GitHub Packages Apache Maven
+        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
         uses: GabrielBB/xvfb-action@v1
         with:
           run: mvn deploy -s settings.xml
