@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.aldrineeinsteen</groupId>
         <artifactId>fun-project</artifactId>
-        <version>1.2.27-SNAPSHOT</version>
+        <version>1.2.27</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
