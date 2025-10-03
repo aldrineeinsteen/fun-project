@@ -90,6 +90,9 @@ public class PluginRepository {
     }
 
     public void init() {
+        // Add standard help option
+        options.addOption("h", "help", false, "Show this help message");
+        
         logger.info("Initializing dynamic plugin discovery system...");
         try {
             List<URL> urls = new ArrayList<>();

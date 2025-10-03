@@ -17,6 +17,12 @@
             <artifactId>plugin-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- Utility core base classes - required for UtilityTemplate plugins -->
+        <dependency>
+            <groupId>com.aldrineeinsteen</groupId>
+            <artifactId>utility-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Global hotkey support for plugin actions -->
         <dependency>
             <groupId>com.github.kwhat</groupId>
