@@ -13,7 +13,7 @@ git clone https://github.com/username/FunProject.git
 
 ## Prerequisites
 
-- Java JDK 11 or later
+- Java JDK 21 or later
 - Apache Maven
 
 ## Building and Running

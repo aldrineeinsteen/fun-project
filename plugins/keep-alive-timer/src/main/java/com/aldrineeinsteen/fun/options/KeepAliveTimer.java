@@ -16,7 +16,7 @@ public class KeepAliveTimer extends UtilityTemplate {
     private LocalTime endTime;
     private final Robot robot = new Robot();
     GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-    private final DisplayModeWrapper displayMode = new DisplayModeWrapper(gd.getDisplayMode());
+    private final DisplayModeWrapper displayMode = new DisplayModeWrapper(gd.getDisplayMode(), gd);
 
     public KeepAliveTimer() throws AWTException {
         this(DEFAULT_DELAY_MILLISECONDS, LocalTime.parse("17:30"));

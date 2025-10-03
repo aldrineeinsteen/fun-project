@@ -1,16 +1,12 @@
 package com.aldrineeinsteen.fun;
 
+import com.aldrineeinsteen.fun.options.helper.PluginRepository;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.UnrecognizedOptionException;
-import org.junit.Rule;
-import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class MainTest {
-
-    @Rule
-    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
     @Test
     public void testMainWithInvalidArguments() {
@@ -19,42 +15,44 @@ public class MainTest {
     }
 
     @Test
-    public void testMainWithSignatureOption() throws Exception {
-        // This test would ideally mock the SignatureSelector and TerminalParser and check if they are invoked.
-        String[] args = {"-sign"};
+    public void testMainWithDynamicPluginOptions() throws Exception {
+        // Test that the system handles plugin options dynamically without hardcoded references
+        // If no plugins are available, this should still work without errors
+        String[] args = {"--help"}; // Help option should always be available
+        try {
+            Main.main(args);
+        } catch (ParseException e) {
+            // Expected behavior when no plugins provide the requested options
+            Assertions.assertTrue(e.getMessage().contains("Unrecognized option") || 
+                                e.getMessage().contains("help"));
+        }
+    }
+
+    @Test 
+    public void testMainWithEmptyArgs() throws Exception {
+        // Test that the system starts correctly with no arguments (interactive mode)
+        String[] args = {};
         Main.main(args);
+        // Should not throw exception - plugins discovered dynamically
     }
 
     @Test
-    public void testMainWithKeepAliveOption() throws Exception {
-        // This test would ideally mock the KeepAliveTimer and check if it's invoked with default values.
-        String[] args = {"--keep-alive"};
+    public void testMainInitializesPluginRepository() throws Exception {
+        // Test that plugin repository is initialized properly
+        String[] args = {};
         Main.main(args);
-    }
-
-    /*@Test
-    public void testMainWithKeepAliveAndEndTimeOption() throws Exception {
-        // This test would ideally mock the KeepAliveTimer and check if it's invoked with the specified end time.
-        String[] args = {"--keep-alive"};
-        Main.main(args);
-    }*/
-
-    @Test
-    public void testMainWithValidEndTime() throws Exception {
-        String[] args = {"--keep-alive"};
-        Main.main(args);
+        
+        // After initialization, the plugin repository should be set up
+        // This tests the dynamic plugin discovery system
+        Assertions.assertNotNull(PluginRepository.getOptions());
+        Assertions.assertNotNull(PluginRepository.getShortcutActions());
+        Assertions.assertNotNull(PluginRepository.getLoadedPlugins());
     }
 
     @Test
-    public void testMainWithInvalidEndTime() {
-        String[] args = {"--keep-alive", "--end-time", "1830"};
-        Assertions.assertThrows(UnrecognizedOptionException.class, () -> Main.main(args));
+    public void testMainWithUnknownOption() {
+        // Test behavior with completely unknown options
+        String[] args = {"--unknown-option", "value"};
+        Assertions.assertThrows(ParseException.class, () -> Main.main(args));
     }
-
-    /*@Test
-    public void testMainWithKeepAliveAndSecondsOption() throws Exception {
-        // This test would ideally mock the KeepAliveTimer and check if it's invoked with the specified seconds.
-        String[] args = {"--keep-alive", "--seconds", "45"};
-        Main.main(args);
-    }*/
 }
