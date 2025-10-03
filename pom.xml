@@ -4,7 +4,7 @@
 
     <groupId>com.aldrineeinsteen</groupId>
     <artifactId>fun-project</artifactId>
-    <version>1.2.10</version>
+    <version>1.2.15-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>fun-core</module>
@@ -17,8 +17,6 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.final>1.2.10</version.final>
-        <version.dev>1.2.11-SNAPSHOT</version.dev>
     </properties>
 
     <name>Fun Project</name>
@@ -118,7 +116,7 @@
         <url>https://github.com/aldrineeinsteen/fun-project</url>
         <connection>scm:git:https://github.com/aldrineeinsteen/fun-project.git</connection>
         <developerConnection>scm:git:https://github.com/aldrineeinsteen/fun-project.git</developerConnection>
-        <tag>v1.2.10</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
@@ -214,9 +212,6 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>3.0.1</version>
                 <configuration>
-                    <tag>v${version.final}</tag>
-                    <releaseVersion>${version.final}</releaseVersion>
-                    <developmentVersion>${version.dev}</developmentVersion>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <checkModificationExcludeList>settings.xml</checkModificationExcludeList>
                 </configuration>
