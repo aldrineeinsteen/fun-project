@@ -35,20 +35,19 @@ public class Main {
         pluginRepository.init();
 
         CommandLineParser parser = new DefaultParser();
-        HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd;
 
         try {
             cmd = parser.parse(PluginRepository.getOptions(), args);
             
-            // Handle help option - exit immediately after showing help
+            // Handle help option - exit immediately after showing structured help
             if (cmd.hasOption("h")) {
-                formatter.printHelp("fun project", PluginRepository.getOptions());
+                System.out.println(PluginRepository.generateStructuredHelp());
                 return;
             }
             
         } catch (ParseException e) {
-            formatter.printHelp("fun project", PluginRepository.getOptions());
+            System.out.println(PluginRepository.generateStructuredHelp());
             logger.error("Invalid command line arguments: ", e);
             throw e;
         }

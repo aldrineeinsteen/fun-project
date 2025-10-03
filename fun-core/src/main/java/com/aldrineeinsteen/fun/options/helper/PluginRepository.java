@@ -47,24 +47,57 @@ public class PluginRepository {
         return utilities.get(name);
     }
 
+    // A class to hold plugin metadata for better help documentation
+    public static class PluginInfo {
+        private final String name;
+        private final String className;
+        private final String description;
+        private final List<Option> options;
+        private final List<Option> params;
+        private final List<ShortcutAction> shortcuts;
+
+        public PluginInfo(String name, String className, String description) {
+            this.name = name;
+            this.className = className;
+            this.description = description;
+            this.options = new ArrayList<>();
+            this.params = new ArrayList<>();
+            this.shortcuts = new ArrayList<>();
+        }
+
+        // Getters
+        public String getName() { return name; }
+        public String getClassName() { return className; }
+        public String getDescription() { return description; }
+        public List<Option> getOptions() { return options; }
+        public List<Option> getParams() { return params; }
+        public List<ShortcutAction> getShortcuts() { return shortcuts; }
+
+        // Methods to add options, params, and shortcuts
+        public void addOption(Option option) { this.options.add(option); }
+        public void addParam(Option param) { this.params.add(param); }
+        public void addShortcut(ShortcutAction shortcut) { this.shortcuts.add(shortcut); }
+    }
+
     // A class to hold shortcut and plugin information
     public static class ShortcutAction {
         private final String action;
         private final String plugin;
+        private final String keyCombination;
 
         @Override
         public String toString() {
             return "ShortcutAction{" +
                     "action='" + action + '\'' +
                     ", plugin='" + plugin + '\'' +
+                    ", keyCombination='" + keyCombination + '\'' +
                     '}';
         }
 
-        public ShortcutAction(String action, String plugin) {
+        public ShortcutAction(String action, String plugin, String keyCombination) {
             this.action = action;
             this.plugin = plugin;
-
-
+            this.keyCombination = keyCombination;
         }
 
         // Getters
@@ -75,13 +108,100 @@ public class PluginRepository {
         public String getPlugin() {
             return plugin;
         }
+
+        public String getKeyCombination() {
+            return keyCombination;
+        }
     }
 
     // Updated Map to hold both action and plugin info
     private static final Map<String, ShortcutAction> shortcutActions = new HashMap<>();
+    
+    // Store plugin metadata for enhanced help documentation
+    private static final Map<String, PluginInfo> pluginInfos = new HashMap<>();
 
     public static Options getOptions() {
         return options;
+    }
+    
+    public static Map<String, PluginInfo> getPluginInfos() {
+        return pluginInfos;
+    }
+    
+    /**
+     * Generate a structured help message showing plugins and their individual documentation
+     */
+    public static String generateStructuredHelp() {
+        StringBuilder help = new StringBuilder();
+        help.append("Fun Project - Java Console Application with Multi-Monitor Support\n");
+        help.append("========================================================================\n\n");
+        
+        // Global options first
+        help.append("GLOBAL OPTIONS:\n");
+        help.append("  -h, --help                Show this help message\n\n");
+        
+        // Plugin-specific sections
+        if (pluginInfos.isEmpty()) {
+            help.append("No plugins loaded.\n");
+        } else {
+            help.append("AVAILABLE PLUGINS:\n");
+            help.append("------------------\n\n");
+            
+            for (PluginInfo pluginInfo : pluginInfos.values()) {
+                help.append(String.format("Plugin: %s\n", pluginInfo.getName()));
+                help.append(String.format("Description: %s\n", pluginInfo.getDescription()));
+                help.append(String.format("Class: %s\n", pluginInfo.getClassName()));
+                
+                // Main options
+                if (!pluginInfo.getOptions().isEmpty()) {
+                    help.append("  Main Options:\n");
+                    for (Option option : pluginInfo.getOptions()) {
+                        help.append(String.format("    -%s, --%s%s%s\n", 
+                            option.getOpt(), 
+                            option.getLongOpt(),
+                            option.hasArg() ? " <arg>" : "",
+                            option.getDescription() != null && !option.getDescription().isEmpty() 
+                                ? "  " + option.getDescription() : ""));
+                    }
+                }
+                
+                // Parameters
+                if (!pluginInfo.getParams().isEmpty()) {
+                    help.append("  Parameters:\n");
+                    for (Option param : pluginInfo.getParams()) {
+                        help.append(String.format("    -%s, --%s%s%s\n", 
+                            param.getOpt(), 
+                            param.getLongOpt(),
+                            param.hasArg() ? " <arg>" : "",
+                            param.getDescription() != null && !param.getDescription().isEmpty() 
+                                ? "  " + param.getDescription() : ""));
+                    }
+                }
+                
+                // Shortcuts
+                if (!pluginInfo.getShortcuts().isEmpty()) {
+                    help.append("  Global Shortcuts:\n");
+                    for (ShortcutAction shortcut : pluginInfo.getShortcuts()) {
+                        help.append(String.format("    %s  Trigger: %s\n", 
+                            shortcut.getKeyCombination(), 
+                            shortcut.getAction()));
+                    }
+                }
+                
+                help.append("\n");
+            }
+        }
+        
+        help.append("EXAMPLES:\n");
+        help.append("---------\n");
+        help.append("  java -cp \"target/lib/*:target/plugins/*:target/fun-project.jar\" com.aldrineeinsteen.fun.Main -k\n");
+        help.append("    Start keep-alive timer with multi-monitor support\n\n");
+        help.append("  java -cp \"target/lib/*:target/plugins/*:target/fun-project.jar\" com.aldrineeinsteen.fun.Main -k -e 17:30\n");
+        help.append("    Start keep-alive timer until 5:30 PM\n\n");
+        help.append("  java -cp \"target/lib/*:target/plugins/*:target/fun-project.jar\" com.aldrineeinsteen.fun.Main -k --multi-monitor --cross-monitors\n");
+        help.append("    Start with multi-monitor mode allowing cross-monitor movement\n\n");
+        
+        return help.toString();
     }
 
     // Getter for shortcutActions
@@ -141,15 +261,31 @@ public class PluginRepository {
             Yaml yaml = new Yaml();
             Map<String, Object> yamlData = yaml.load(is);
 
-            // Parse and instantiate the plugin class
+            // Extract plugin metadata
+            String pluginName = (String) yamlData.get("name");
             String pluginClassName = (String) yamlData.get("pluginClass");
+            String description = (String) yamlData.get("description");
+            
+            if (pluginName == null) pluginName = pluginClassName;
+            if (description == null) description = "No description available";
+
+            // Create PluginInfo to collect metadata
+            PluginInfo pluginInfo = new PluginInfo(pluginName, pluginClassName, description);
+
+            // Parse and instantiate the plugin class
             if (pluginClassName != null) {
                 instantiateAndRegisterPlugin(pluginClassName);
                 addLoadedPlugin(pluginClassName);
             }
 
-            parseOptions(yamlData);
-            parseShortcuts(pluginClassName, yamlData);
+            parseOptions(yamlData, pluginInfo);
+            parseParams(yamlData, pluginInfo);
+            parseShortcuts(pluginClassName, yamlData, pluginInfo);
+            
+            // Store the plugin information
+            if (pluginName != null) {
+                pluginInfos.put(pluginName, pluginInfo);
+            }
         } catch (IOException e) {
             logger.error("Error parsing plugin.yaml: ", e);
         }
@@ -201,7 +337,7 @@ public class PluginRepository {
     }
 
     @SuppressWarnings("unchecked")
-    private void parseOptions(Map<String, Object> yamlData) {
+    private void parseOptions(Map<String, Object> yamlData, PluginInfo pluginInfo) {
         Object optionsObj = yamlData.get("option");
         if (optionsObj == null) {
             logger.debug("No options defined in plugin configuration");
@@ -235,6 +371,7 @@ public class PluginRepository {
                     .build();
                 
                 options.addOption(option);
+                pluginInfo.addOption(option);  // Add to plugin info for structured help
                 logger.debug("Added command option: -{}/{} (hasArgs: {})", shortOpt, longOpt, hasArguments);
             } catch (ClassCastException e) {
                 logger.error("Invalid option configuration format: {}", command, e);
@@ -243,7 +380,50 @@ public class PluginRepository {
     }
 
     @SuppressWarnings("unchecked")
-    private void parseShortcuts(String pluginClassName, Map<String, Object> yamlData) {
+    private void parseParams(Map<String, Object> yamlData, PluginInfo pluginInfo) {
+        Object paramsObj = yamlData.get("params");
+        if (paramsObj == null) {
+            logger.debug("No params defined in plugin configuration");
+            return;
+        }
+
+        if (!(paramsObj instanceof List)) {
+            logger.error("Plugin params must be a list, found: {}", paramsObj.getClass().getSimpleName());
+            return;
+        }
+
+        List<Map<String, Object>> paramOptions = (List<Map<String, Object>>) paramsObj;
+        logger.debug("Processing {} param options", paramOptions.size());
+        
+        for (Map<String, Object> param : paramOptions) {
+            try {
+                String shortOpt = (String) param.get("shortOpt");
+                Boolean hasArguments = (Boolean) param.get("hasArguments");
+                String longOpt = (String) param.get("longOpt");
+                String description = (String) param.get("description");
+
+                if (shortOpt == null || longOpt == null) {
+                    logger.error("Plugin param missing required shortOpt or longOpt: {}", param);
+                    continue;
+                }
+
+                Option option = Option.builder(shortOpt)
+                    .hasArg(hasArguments != null ? hasArguments : false)
+                    .longOpt(longOpt)
+                    .desc(description != null ? description : "")
+                    .build();
+                
+                options.addOption(option);
+                pluginInfo.addParam(option);  // Add to plugin info for structured help
+                logger.debug("Added param option: -{}/{} (hasArgs: {})", shortOpt, longOpt, hasArguments);
+            } catch (ClassCastException e) {
+                logger.error("Invalid param configuration format: {}", param, e);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void parseShortcuts(String pluginClassName, Map<String, Object> yamlData, PluginInfo pluginInfo) {
         Object shortcutsObj = yamlData.get("shortcuts");
         if (shortcutsObj == null) {
             logger.debug("No shortcuts defined for plugin: {}", pluginClassName);
@@ -280,7 +460,9 @@ public class PluginRepository {
                         keyCombination, existing.getPlugin(), pluginClassName);
                 }
                 
-                shortcutActions.put(keyCombination, new ShortcutAction(action, pluginClassName));
+                ShortcutAction shortcutAction = new ShortcutAction(action, pluginClassName, keyCombination);
+                shortcutActions.put(keyCombination, shortcutAction);
+                pluginInfo.addShortcut(shortcutAction);  // Add to plugin info for structured help
                 logger.debug("Registered shortcut: {} -> {}:{}", keyCombination, pluginClassName, action);
             } catch (ClassCastException e) {
                 logger.error("Invalid shortcut configuration format for plugin: {}, shortcut: {}", pluginClassName, shortcut, e);

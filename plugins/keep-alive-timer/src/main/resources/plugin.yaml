@@ -1,5 +1,6 @@
 name: KeepAliveTimer
 pluginClass: com.aldrineeinsteen.fun.options.KeepAliveTimer
+description: Prevents system sleep by moving mouse pointer at regular intervals. Supports multi-monitor setups with intelligent pointer tracking and hotplug detection.
 option:
   - shortOpt: k
     name: Keep alive

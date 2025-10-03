@@ -1,5 +1,6 @@
 name: SignatureSelector
 pluginClass: com.aldrineeinsteen.fun.options.SignatureSelector
+description: Provides weighted random selection of predefined signatures and copies them to the clipboard. Supports global keyboard shortcuts for quick access.
 option:
   - shortOpt: sign
     name: Signature
