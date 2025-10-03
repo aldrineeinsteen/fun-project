@@ -5,13 +5,13 @@ pluginFolder=target/plugins/*
 
 if [[ -f "$jarfile" ]]; then
     echo "Running fun-project.jar"
-    java -cp "$libFolder:$pluginFolder:$jarfile" com.aldrineeinsteen.fun.Main --signature --keep-alive
+    java -cp "$libFolder:$pluginFolder:$jarfile" com.aldrineeinsteen.fun.Main --signature --keep-alive 1900
  else
     echo "fun-project.jar not found, building with Maven"
     ./mvnw clean install
     if [[ -f "$jarfile" ]]; then
         echo "Running fun-project.jar"
-        java -cp "$libFolder:$pluginFolder:$jarfile" com.aldrineeinsteen.fun.Main --signature --keep-alive
+        java -cp "$libFolder:$pluginFolder:$jarfile" com.aldrineeinsteen.fun.Main --signature --keep-alive 1900
     else
         echo "Error building jar file"
         exit 1
