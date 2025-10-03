@@ -90,6 +90,7 @@ public class PluginRepository {
     }
 
     public void init() {
+        logger.info("Initializing dynamic plugin discovery system...");
         try {
             List<URL> urls = new ArrayList<>();
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -100,15 +101,36 @@ public class PluginRepository {
                 urls.add(url);
             }
 
+            logger.info("Discovered {} plugin configuration files", urls.size());
+            
             for (URL url : urls) {
-                logger.debug("Found plugin.yaml in: {}", url.getPath());
+                logger.info("Processing plugin configuration: {}", url.getPath());
                 parsePluginYaml(url);
             }
+            
+            // Summary logging
+            logger.info("Plugin discovery complete:");
+            logger.info("  - Total plugins loaded: {}", getLoadedPlugins().size());
+            logger.info("  - Plugin instances registered: {}", plugins.size());
+            logger.info("  - Utility instances registered: {}", utilities.size());
+            logger.info("  - CLI options registered: {}", options.getOptions().size());
+            logger.info("  - Global shortcuts registered: {}", shortcutActions.size());
+            
+            if (!getLoadedPlugins().isEmpty()) {
+                logger.info("Loaded plugins: {}", String.join(", ", getLoadedPlugins()));
+            }
+            
+            if (!shortcutActions.isEmpty()) {
+                logger.info("Available shortcuts:");
+                shortcutActions.forEach((key, action) -> 
+                    logger.info("  {} -> {}:{}", key, action.getPlugin(), action.getAction()));
+            }
+            
         } catch (IOException e) {
-            logger.error("Exception when loading the yaml: ", e);
+            logger.error("Exception when loading plugin configurations: ", e);
         }
 
-        logger.debug("Shortcuts: {}", getShortcutActions());
+        logger.debug("Complete shortcut mappings: {}", getShortcutActions());
     }
 
     private void parsePluginYaml(URL url) {

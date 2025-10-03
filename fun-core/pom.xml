@@ -11,16 +11,13 @@
     <artifactId>fun-core</artifactId>
 
     <dependencies>
+        <!-- Plugin core interfaces - required for dynamic plugin loading -->
         <dependency>
             <groupId>com.aldrineeinsteen</groupId>
-            <artifactId>keep-alive-timer</artifactId>
+            <artifactId>plugin-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.aldrineeinsteen</groupId>
-            <artifactId>signature-selector</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!-- Global hotkey support for plugin actions -->
         <dependency>
             <groupId>com.github.kwhat</groupId>
             <artifactId>jnativehook</artifactId>
