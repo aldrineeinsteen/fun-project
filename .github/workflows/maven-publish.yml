@@ -85,6 +85,47 @@ jobs:
           echo "⏭️  Skipping release process to avoid conflicts"
           echo "📦 No new artifacts to publish"
 
+      - name: Create GitHub Release for existing tag
+        if: steps.check_release.outputs.skip_release == 'true'
+        run: |
+          CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          TAG="v${CURRENT_VERSION}"
+          
+          # Check if GitHub Release already exists
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "📋 GitHub Release $TAG already exists"
+          else
+            echo "🆕 Creating GitHub Release for existing tag $TAG"
+            
+            # Build the project to get artifacts
+            mvn -B clean package -DskipTests=true -Dmaven.javadoc.skip=true
+            
+            # Create release notes
+            cat > release_notes.md << EOF
+          ## Release $CURRENT_VERSION
+          
+          This release was created from an existing git tag.
+          
+          ### Key Features
+          - Java-based mouse movement utility with plugin architecture
+          - Dynamic plugin loading system
+          - Configurable timer with end-time specification
+          - Global hotkey support
+          - Cross-platform compatibility
+          
+          **Full Changelog**: https://github.com/aldrineeinsteen/fun-project/releases
+          EOF
+            
+            # Create the GitHub Release
+            gh release create "$TAG" \
+              --title "Release $CURRENT_VERSION" \
+              --notes-file release_notes.md \
+              --latest \
+              target/fun-project.jar
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
       - name: Maven release prepare
         if: steps.check_release.outputs.skip_release == 'false'
         run: |
