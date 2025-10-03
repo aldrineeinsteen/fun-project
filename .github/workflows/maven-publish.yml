@@ -1,5 +1,9 @@
 # Optimized GitHub Release Workflow
 # Publishes to GitHub Packages and GitHub Releases with improved performance and reliability
+#
+# This workflow is completely independent from Maven Central publishing.
+# It creates GitHub Releases and publishes to GitHub Packages.
+# Maven Central publishing is handled by a separate workflow (maven-central.yml).
 
 name: GitHub Release
 

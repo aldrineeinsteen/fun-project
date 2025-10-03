@@ -1,6 +1,14 @@
 # Maven Central Publishing Workflow
 # Publishes releases to Maven Central Repository via Sonatype OSSRH
 # Triggered manually or automatically after GitHub release
+# 
+# IMPORTANT: This workflow is completely independent from GitHub release process.
+# If Maven Central publishing fails, it will NOT affect:
+# - GitHub Releases (already published)
+# - GitHub Packages (already published) 
+# - Binary distributions (already available)
+# 
+# This workflow can be re-run safely without affecting the main release.
 
 name: Maven Central Release
 
@@ -91,12 +99,33 @@ jobs:
     needs: [validate]
     runs-on: ubuntu-latest
     if: github.event.inputs.dry_run != 'true'
-    environment: maven-central
+    # Note: Remove 'environment: maven-central' line if you haven't set up GitHub environments
+    # environment: maven-central
+    continue-on-error: true  # Don't fail the workflow if Maven Central publishing fails
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.validate.outputs.tag }}
+
+      - name: Verify GitHub Release exists
+        run: |
+          echo "🔍 Verifying GitHub Release exists for ${{ needs.validate.outputs.tag }}"
+          
+          # Check if release exists (optional - will continue even if this fails)
+          if command -v gh &> /dev/null; then
+            if gh release view ${{ needs.validate.outputs.tag }} &> /dev/null; then
+              echo "✅ GitHub Release ${{ needs.validate.outputs.tag }} found"
+            else
+              echo "⚠️  GitHub Release ${{ needs.validate.outputs.tag }} not found, but continuing anyway"
+              echo "💡 Maven Central can be published independently of GitHub Releases"
+            fi
+          else
+            echo "💡 GitHub CLI not available, skipping release verification"
+          fi
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v4
@@ -172,6 +201,13 @@ jobs:
           echo "🎉 Successfully published ${{ needs.validate.outputs.version }} to Maven Central!"
           echo "📦 Artifacts will be available at: https://repo1.maven.org/maven2/com/aldrineeinsteen/fun-project/"
           echo "⏳ Note: It may take a few hours for artifacts to appear in Maven Central search"
+          echo ""
+          echo "✅ IMPORTANT: This Maven Central publishing is completely independent from:"
+          echo "   - GitHub Releases (already completed)"
+          echo "   - GitHub Packages (already completed)"
+          echo "   - Binary distributions (already available)"
+          echo ""
+          echo "💡 If this workflow failed, you can re-run it without affecting the main release process."
 
   dry-run:
     name: Dry Run Validation
