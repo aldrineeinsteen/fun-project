@@ -132,7 +132,7 @@ Uses Apache Commons CLI with dynamic option registration from plugins:
 
 ## Development Notes
 
-- Java 11+ required
+- Java 21+ required
 - Mouse control via `java.awt.Robot`
 - Global hotkey handling via `jnativehook` library
 - Terminal interaction through JLine for raw mode input
