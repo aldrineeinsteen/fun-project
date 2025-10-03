@@ -76,6 +76,15 @@ jobs:
             echo "skip_release=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Log release skip
+        if: steps.check_release.outputs.skip_release == 'true'
+        run: |
+          CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "✅ Release v${CURRENT_VERSION} already exists and is published"
+          echo "🏷️  Git tag v${CURRENT_VERSION} found"
+          echo "⏭️  Skipping release process to avoid conflicts"
+          echo "📦 No new artifacts to publish"
+
       - name: Maven release prepare
         if: steps.check_release.outputs.skip_release == 'false'
         run: |
@@ -99,6 +108,7 @@ jobs:
           echo "Release version: $VERSION"
 
       - name: Upload release artifacts
+        if: steps.check_release.outputs.skip_release == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: release-artifacts
