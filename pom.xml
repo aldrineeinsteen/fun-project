@@ -17,8 +17,8 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.final>1.2.8</version.final>
-        <version.dev>1.2.9-SNAPSHOT</version.dev>
+        <version.final>1.2.9</version.final>
+        <version.dev>1.2.10-SNAPSHOT</version.dev>
     </properties>
 
     <description>Fun Project :: A Console App
