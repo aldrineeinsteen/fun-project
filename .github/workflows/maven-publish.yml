@@ -38,7 +38,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
       - name: Upload release.properties
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: release.properties
           path: release.properties
@@ -52,7 +52,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
       - name: Download release.properties
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: release.properties
       - name: Set up JDK 21
@@ -77,7 +77,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
       - name: Download release.properties for extraction
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: release.properties
 
@@ -87,17 +87,6 @@ jobs:
           TAG=$(grep 'scm.tag=' release.properties | cut -d= -f2)
           echo "steps_tag=$TAG" >> $GITHUB_OUTPUT
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: ${{ steps.extract_tag.outputs.steps_tag }}
-          release_name: Release ${{ steps.extract_tag.outputs.steps_tag }}
-          draft: false
-          prerelease: false
-          
       - name: Create distribution package
         run: |
           cd target/checkout
@@ -117,22 +106,15 @@ jobs:
           zip -r ../fun-project-distribution.zip .
           cd ..
           
-      - name: Upload Main Application JAR
-        uses: actions/upload-release-asset@v1
+      - name: Create Release with Assets
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/checkout/target/fun-project.jar
-          asset_name: fun-project.jar
-          asset_content_type: application/java-archive
-          
-      - name: Upload Complete Distribution
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/checkout/fun-project-distribution.zip
-          asset_name: fun-project-distribution.zip
-          asset_content_type: application/zip
+          tag_name: ${{ steps.extract_tag.outputs.steps_tag }}
+          name: Release ${{ steps.extract_tag.outputs.steps_tag }}
+          draft: false
+          prerelease: false
+          files: |
+            target/checkout/target/fun-project.jar
+            target/checkout/fun-project-distribution.zip
