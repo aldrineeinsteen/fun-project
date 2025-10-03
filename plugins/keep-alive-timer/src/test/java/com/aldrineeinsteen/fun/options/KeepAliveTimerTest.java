@@ -3,6 +3,7 @@ package com.aldrineeinsteen.fun.options;
 import com.aldrineeinsteen.fun.options.helper.DisplayModeWrapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Assumptions;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -21,6 +22,10 @@ public class KeepAliveTimerTest {
 
     @Test
     public void testRun() throws AWTException {
+        // Skip test in headless environments since KeepAliveTimer requires AWT components
+        Assumptions.assumeFalse(GraphicsEnvironment.isHeadless(), 
+            "Test skipped in headless environment - KeepAliveTimer requires display access");
+        
         KeepAliveTimer keepAliveTimer = new KeepAliveTimer(10, LocalTime.now().plusSeconds(5));
         keepAliveTimer.run();
 
