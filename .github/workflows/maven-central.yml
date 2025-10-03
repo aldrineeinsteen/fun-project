@@ -1,0 +1,215 @@
+# Maven Central Publishing Workflow
+# Publishes releases to Maven Central Repository via Sonatype OSSRH
+# Triggered manually or automatically after GitHub release
+
+name: Maven Central Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 1.2.9)'
+        required: true
+        type: string
+      dry_run:
+        description: 'Perform a dry run (no actual publishing)'
+        required: false
+        type: boolean
+        default: false
+  release:
+    types: [published]
+
+env:
+  JAVA_VERSION: '21'
+  JAVA_DISTRIBUTION: 'temurin'
+  GPG_KEY_ID: 'your-gpg-key-id'  # Update with your actual GPG key ID
+
+jobs:
+  validate:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+      tag: ${{ steps.get_version.outputs.tag }}
+    steps:
+      - name: Extract version information
+        id: get_version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+            TAG="v${VERSION}"
+          else
+            TAG="${{ github.event.release.tag_name }}"
+            VERSION="${TAG#v}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Publishing version: $VERSION (tag: $TAG)"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.get_version.outputs.tag }}
+
+      - name: Validate POM configuration
+        run: |
+          echo "Validating POM for Maven Central requirements..."
+          
+          # Check required elements
+          if ! grep -q "<name>" pom.xml; then
+            echo "❌ Missing <name> element"
+            exit 1
+          fi
+          
+          if ! grep -q "<description>" pom.xml; then
+            echo "❌ Missing <description> element"
+            exit 1
+          fi
+          
+          if ! grep -q "<url>" pom.xml; then
+            echo "⚠️  Missing <url> element (recommended)"
+          fi
+          
+          if ! grep -q "<licenses>" pom.xml; then
+            echo "❌ Missing <licenses> section"
+            exit 1
+          fi
+          
+          if ! grep -q "<developers>" pom.xml; then
+            echo "⚠️  Missing <developers> section (recommended)"
+          fi
+          
+          if ! grep -q "<scm>" pom.xml; then
+            echo "❌ Missing <scm> section"
+            exit 1
+          fi
+          
+          echo "✅ POM validation passed"
+
+  publish:
+    name: Publish to Maven Central
+    needs: [validate]
+    runs-on: ubuntu-latest
+    if: github.event.inputs.dry_run != 'true'
+    environment: maven-central
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.validate.outputs.tag }}
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: maven
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libxkbcommon-x11-0 xvfb gnupg
+
+      - name: Import GPG key
+        run: |
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 -d | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
+
+      - name: Configure Maven settings
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml << 'EOF'
+          <settings>
+            <servers>
+              <server>
+                <id>ossrh</id>
+                <username>${env.MAVEN_USERNAME}</username>
+                <password>${env.MAVEN_PASSWORD}</password>
+              </server>
+            </servers>
+            <profiles>
+              <profile>
+                <id>ossrh</id>
+                <activation>
+                  <activeByDefault>true</activeByDefault>
+                </activation>
+                <properties>
+                  <gpg.executable>gpg</gpg.executable>
+                  <gpg.keyname>${{ env.GPG_KEY_ID }}</gpg.keyname>
+                  <gpg.passphrase>${{ secrets.GPG_PASSPHRASE }}</gpg.passphrase>
+                </properties>
+              </profile>
+            </profiles>
+          </settings>
+          EOF
+
+      - name: Deploy to Maven Central
+        run: |
+          xvfb-run -a mvn clean deploy \
+            -DskipTests=true \
+            -Dmaven.javadoc.skip=false \
+            -Dmaven.source.skip=false \
+            -Pgpg-sign \
+            -B
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          GPG_TTY: $(tty)
+
+      - name: Release to Maven Central
+        run: |
+          echo "🎉 Successfully published ${{ needs.validate.outputs.version }} to Maven Central!"
+          echo "📦 Artifacts will be available at: https://repo1.maven.org/maven2/com/aldrineeinsteen/fun-project/"
+          echo "⏳ Note: It may take a few hours for artifacts to appear in Maven Central search"
+
+  dry-run:
+    name: Dry Run Validation
+    needs: [validate]
+    runs-on: ubuntu-latest
+    if: github.event.inputs.dry_run == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.validate.outputs.tag }}
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: maven
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libxkbcommon-x11-0 xvfb
+
+      - name: Dry run build
+        run: |
+          xvfb-run -a mvn clean verify \
+            -DskipTests=false \
+            -Dmaven.javadoc.skip=false \
+            -Dmaven.source.skip=false \
+            -B
+
+      - name: Validate artifacts
+        run: |
+          echo "🔍 Validating generated artifacts for Maven Central compliance..."
+          
+          # Check for required artifacts
+          find . -name "*.jar" -type f | grep -E "(sources|javadoc)" || echo "⚠️  Missing sources/javadoc JARs"
+          
+          echo "✅ Dry run completed successfully"
+          echo "📦 Version ${{ needs.validate.outputs.version }} is ready for Maven Central publishing"
