@@ -4,22 +4,30 @@
     <parent>
         <groupId>com.aldrineeinsteen</groupId>
         <artifactId>fun-project</artifactId>
-        <version>1.2.7-SNAPSHOT</version>
+        <version>1.2.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>fun-core</artifactId>
 
     <dependencies>
+        <!-- Plugin core interfaces - required for dynamic plugin loading -->
         <dependency>
             <groupId>com.aldrineeinsteen</groupId>
-            <artifactId>keep-alive-timer</artifactId>
+            <artifactId>plugin-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- Utility core base classes - required for UtilityTemplate plugins -->
         <dependency>
             <groupId>com.aldrineeinsteen</groupId>
-            <artifactId>signature-selector</artifactId>
+            <artifactId>utility-core</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <!-- Global hotkey support for plugin actions -->
+        <dependency>
+            <groupId>com.github.kwhat</groupId>
+            <artifactId>jnativehook</artifactId>
+            <version>2.2.2</version>
         </dependency>
     </dependencies>
 

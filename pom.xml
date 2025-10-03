@@ -4,19 +4,21 @@
 
     <groupId>com.aldrineeinsteen</groupId>
     <artifactId>fun-project</artifactId>
-    <version>1.2.7-SNAPSHOT</version>
+    <version>1.2.9-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>fun-core</module>
         <module>plugins</module>
+        <module>plugins/plugin-core</module>
+        <module>plugins/utility-core</module>
     </modules>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.final>1.2.6</version.final>
-        <version.dev>1.2.7-SNAPSHOT</version.dev>
+        <version.final>1.2.8</version.final>
+        <version.dev>1.2.9-SNAPSHOT</version.dev>
     </properties>
 
     <description>Fun Project :: A Console App

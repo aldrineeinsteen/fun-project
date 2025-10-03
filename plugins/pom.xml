@@ -4,11 +4,19 @@
     <parent>
         <groupId>com.aldrineeinsteen</groupId>
         <artifactId>fun-project</artifactId>
-        <version>1.2.7-SNAPSHOT</version>
+        <version>1.2.9-SNAPSHOT</version>
     </parent>
 
     <artifactId>plugins</artifactId>
     <packaging>pom</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.aldrineeinsteen</groupId>
+            <artifactId>plugin-core</artifactId>
+            <version>1.2.9-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
     <modules>
         <module>signature-selector</module>
