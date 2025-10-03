@@ -15,7 +15,9 @@ import static org.mockito.Mockito.*;
 public class KeepAliveTimerTest {
 
     final Robot robot = Mockito.mock(Robot.class);
-    final DisplayModeWrapper displayMode = new DisplayModeWrapper(800, 800);
+    final GraphicsDevice mockGraphicsDevice = Mockito.mock(GraphicsDevice.class);
+    final DisplayMode realDisplayMode = new DisplayMode(800, 600, DisplayMode.BIT_DEPTH_MULTI, DisplayMode.REFRESH_RATE_UNKNOWN);
+    final DisplayModeWrapper displayMode = new DisplayModeWrapper(realDisplayMode, mockGraphicsDevice);
 
     @Test
     public void testRun() throws AWTException {
