@@ -76,4 +76,6 @@ This will run the program until 6pm and keep the system active.
 
 ## License
 
-This project is licensed under the Apache License. See the `LICENSE` file for details.
+This project is licensed under the Apache License, Version 2.0. See the `LICENSE` file for details.
+
+Copyright 2017-2025 Aldrine Einsteen
