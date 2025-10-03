@@ -19,6 +19,26 @@ public class Main {
     public static void main(String[] args) throws IOException, ParseException {
         pluginRepository.init();
 
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd;
+
+        try {
+            cmd = parser.parse(PluginRepository.getOptions(), args);
+            
+            // Handle help option - exit immediately after showing help
+            if (cmd.hasOption("h")) {
+                formatter.printHelp("fun project", PluginRepository.getOptions());
+                return;
+            }
+            
+        } catch (ParseException e) {
+            formatter.printHelp("fun project", PluginRepository.getOptions());
+            logger.error("Invalid command line arguments: ", e);
+            throw e;
+        }
+
+        // Only set up terminal and listeners if we're not just showing help
         Terminal terminal = TerminalBuilder.builder()
                 .system(false)
                 .streams(System.in, System.out)
@@ -26,18 +46,6 @@ public class Main {
         terminal.enterRawMode();
         GlobalInputListener globalInputListener = new GlobalInputListener();
         globalInputListener.registerHook();
-
-        CommandLineParser parser = new DefaultParser();
-        HelpFormatter formatter = new HelpFormatter();
-        CommandLine cmd;
-
-        try {
-            cmd = parser.parse(PluginRepository.getOptions(), args);
-        } catch (ParseException e) {
-            formatter.printHelp("fun project", PluginRepository.getOptions());
-            logger.error("Invalid command line arguments: ", e);
-            throw e;
-        }
 
         // Execute the action for each loaded plugin if needed
         PluginRepository.getLoadedPlugins().forEach(pluginName -> {
