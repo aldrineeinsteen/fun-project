@@ -74,19 +74,22 @@ public class PluginRepositoryTest {
     public void testShortcutAction_CreationAndGetters() {
         String action = "testAction";
         String plugin = "TestPlugin";
+        String keyCombination = "CTRL + SHIFT + ALT + T";
         
-        PluginRepository.ShortcutAction shortcutAction = new PluginRepository.ShortcutAction(action, plugin);
+        PluginRepository.ShortcutAction shortcutAction = new PluginRepository.ShortcutAction(action, plugin, keyCombination);
         
         assertEquals(action, shortcutAction.getAction(), "Action should match");
         assertEquals(plugin, shortcutAction.getPlugin(), "Plugin should match");
+        assertEquals(keyCombination, shortcutAction.getKeyCombination(), "Key combination should match");
     }
 
     @Test
     public void testShortcutAction_ToString() {
         String action = "testAction";
         String plugin = "TestPlugin";
+        String keyCombination = "CTRL + SHIFT + ALT + T";
         
-        PluginRepository.ShortcutAction shortcutAction = new PluginRepository.ShortcutAction(action, plugin);
+        PluginRepository.ShortcutAction shortcutAction = new PluginRepository.ShortcutAction(action, plugin, keyCombination);
         String toString = shortcutAction.toString();
         
         assertNotNull(toString, "toString should not return null");
