@@ -100,6 +100,37 @@ jobs:
             # Build the project to get artifacts
             mvn -B clean package -DskipTests=true -Dmaven.javadoc.skip=true
             
+            # Create distribution packages
+            mkdir -p release-package/{lib,plugins,bin,docs}
+            
+            # Copy main application jar
+            cp target/fun-project.jar release-package/
+            
+            # Copy dependencies  
+            cp -r target/lib/* release-package/lib/ 2>/dev/null || :
+            
+            # Copy plugin jars
+            cp -r target/plugins/* release-package/plugins/ 2>/dev/null || :
+            
+            # Copy start scripts
+            cp start.sh release-package/bin/ 2>/dev/null || :
+            cp start.cmd release-package/bin/ 2>/dev/null || :
+            
+            # Copy documentation
+            cp README.md release-package/docs/ 2>/dev/null || :
+            cp LICENSE release-package/docs/ 2>/dev/null || :
+            
+            # Create distribution archives
+            cd release-package
+            zip -r ../fun-project-${CURRENT_VERSION}-distribution.zip . -q
+            tar -czf ../fun-project-${CURRENT_VERSION}-distribution.tar.gz .
+            cd ..
+            
+            # Create checksums
+            sha256sum fun-project-${CURRENT_VERSION}-distribution.zip > fun-project-${CURRENT_VERSION}-distribution.zip.sha256
+            sha256sum fun-project-${CURRENT_VERSION}-distribution.tar.gz > fun-project-${CURRENT_VERSION}-distribution.tar.gz.sha256
+            sha256sum target/fun-project.jar > fun-project-${CURRENT_VERSION}.jar.sha256
+            
             # Create release notes
             cat > release_notes.md << EOF
           ## Release $CURRENT_VERSION
@@ -113,15 +144,26 @@ jobs:
           - Global hotkey support
           - Cross-platform compatibility
           
+          ### Downloads
+          - **fun-project.jar**: Main application JAR file
+          - **fun-project-${CURRENT_VERSION}-distribution.zip**: Complete distribution package (Windows)
+          - **fun-project-${CURRENT_VERSION}-distribution.tar.gz**: Complete distribution package (Unix/Linux)
+          - **SHA256 files**: Checksums for all packages
+          
           **Full Changelog**: https://github.com/aldrineeinsteen/fun-project/releases
           EOF
             
-            # Create the GitHub Release
+            # Create the GitHub Release with all distribution files
             gh release create "$TAG" \
               --title "Release $CURRENT_VERSION" \
               --notes-file release_notes.md \
               --latest \
-              target/fun-project.jar
+              target/fun-project.jar \
+              fun-project-${CURRENT_VERSION}-distribution.zip \
+              fun-project-${CURRENT_VERSION}-distribution.tar.gz \
+              fun-project-${CURRENT_VERSION}.jar.sha256 \
+              fun-project-${CURRENT_VERSION}-distribution.zip.sha256 \
+              fun-project-${CURRENT_VERSION}-distribution.tar.gz.sha256
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
