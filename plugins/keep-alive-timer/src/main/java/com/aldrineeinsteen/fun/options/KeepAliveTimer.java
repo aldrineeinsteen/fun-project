@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class KeepAliveTimer extends UtilityTemplate {
     private static KeepAliveTimer instance; //used for singleton design pattern
@@ -15,11 +18,18 @@ public class KeepAliveTimer extends UtilityTemplate {
     private int delayMilliseconds = DEFAULT_DELAY_MILLISECONDS;
     private LocalTime endTime;
     private final Robot robot = new Robot();
-    GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-    private final DisplayModeWrapper displayMode = new DisplayModeWrapper(gd.getDisplayMode(), gd);
+    
+    // Multi-monitor support
+    private final GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    private final GraphicsDevice[] allGraphicsDevices = graphicsEnvironment.getScreenDevices();
+    private final List<DisplayModeWrapper> allDisplayModes;
+    private final DisplayModeWrapper primaryDisplayMode;
+    
+    // Current active display mode (can be switched between monitors)
+    private DisplayModeWrapper currentDisplayMode;
 
     public KeepAliveTimer() throws AWTException {
-        this(DEFAULT_DELAY_MILLISECONDS, LocalTime.parse("17:30"));
+        this(DEFAULT_DELAY_MILLISECONDS, LocalTime.parse("18:30"));
     }
 
     public KeepAliveTimer(LocalTime endTime) throws AWTException {
@@ -29,6 +39,19 @@ public class KeepAliveTimer extends UtilityTemplate {
     public KeepAliveTimer(int delayMilliseconds, LocalTime endTime) throws AWTException {
         this.delayMilliseconds = delayMilliseconds;
         this.endTime = endTime;
+        
+        // Initialize multi-monitor support
+        this.allDisplayModes = Arrays.stream(allGraphicsDevices)
+                .map(device -> new DisplayModeWrapper(device.getDisplayMode(), device))
+                .collect(Collectors.toList());
+        
+        // Set primary display mode (default screen device)
+        GraphicsDevice primaryDevice = graphicsEnvironment.getDefaultScreenDevice();
+        this.primaryDisplayMode = new DisplayModeWrapper(primaryDevice.getDisplayMode(), primaryDevice);
+        this.currentDisplayMode = primaryDisplayMode;
+        
+        // Log all available monitors
+        logAvailableMonitors();
     }
 
     // Public method to get the instance
@@ -61,16 +84,43 @@ public class KeepAliveTimer extends UtilityTemplate {
         this.displayMode = displayMode;
     }*/
 
+    /**
+     * Log all available monitors with their details
+     */
+    private void logAvailableMonitors() {
+        logger.info("=== Multi-Monitor Detection Results ===");
+        logger.info("Total monitors detected: {}", allDisplayModes.size());
+        
+        for (int i = 0; i < allDisplayModes.size(); i++) {
+            DisplayModeWrapper display = allDisplayModes.get(i);
+            GraphicsDevice device = display.getDevice();
+            boolean isPrimary = device.equals(graphicsEnvironment.getDefaultScreenDevice());
+            
+            logger.info("Monitor {}: {}x{} {} - Device ID: {} {}",
+                    i + 1, 
+                    display.getWidth(), 
+                    display.getHeight(),
+                    isPrimary ? "(PRIMARY)" : "",
+                    device.getIDstring(),
+                    isPrimary ? "- ACTIVE" : ""
+            );
+        }
+        logger.info("========================================");
+    }
+
     public void runUtility() {
-        if (robot == null || endTime == null || displayMode == null) {
+        if (robot == null || endTime == null || currentDisplayMode == null) {
             logger.error("KeepAliveTimer is not properly initialized");
             return;
         }
 
-        int screenHeight = displayMode.getHeight() - 1;
-        int screenWidth = displayMode.getWidth() - 1;
+        int screenHeight = currentDisplayMode.getHeight() - 1;
+        int screenWidth = currentDisplayMode.getWidth() - 1;
 
-        logger.debug("Current screen resolution - {}x{}p", displayMode.getWidth(), displayMode.getHeight());
+        logger.info("Starting keep-alive on monitor: {}x{} (Device: {})", 
+                currentDisplayMode.getWidth(), 
+                currentDisplayMode.getHeight(),
+                currentDisplayMode.getDevice().getIDstring());
 
         while (LocalTime.now().isBefore(endTime)) {
             robot.delay(delayMilliseconds);
@@ -78,6 +128,16 @@ public class KeepAliveTimer extends UtilityTemplate {
             PointerInfo pointerInfo = MouseInfo.getPointerInfo();
             int xPosition = pointerInfo.getLocation().x;
             int yPosition = pointerInfo.getLocation().y;
+
+            // Detect which monitor the mouse is currently on
+            DisplayModeWrapper currentMonitor = detectCurrentMonitor(xPosition, yPosition);
+            if (currentMonitor != null && !currentMonitor.equals(currentDisplayMode)) {
+                logger.info("Mouse moved to different monitor: {} - Updating active display", 
+                        currentMonitor.getDevice().getIDstring());
+                currentDisplayMode = currentMonitor;
+                screenHeight = currentDisplayMode.getHeight() - 1;
+                screenWidth = currentDisplayMode.getWidth() - 1;
+            }
 
             if (xPosition < screenWidth && yPosition < screenHeight) {
                 int increment = xPosition % 2 == 0 ? 1 : -1;
@@ -89,8 +149,23 @@ public class KeepAliveTimer extends UtilityTemplate {
             }
 
             robot.mouseMove(xPosition, yPosition);
-            logger.info("Updated position - {}, {}", xPosition, yPosition);
+            logger.info("Updated position - {}, {} on monitor: {}", 
+                    xPosition, yPosition, currentDisplayMode.getDevice().getIDstring());
         }
+    }
+    
+    /**
+     * Detect which monitor contains the given coordinates
+     */
+    private DisplayModeWrapper detectCurrentMonitor(int x, int y) {
+        for (DisplayModeWrapper display : allDisplayModes) {
+            GraphicsDevice device = display.getDevice();
+            Rectangle bounds = device.getDefaultConfiguration().getBounds();
+            if (bounds.contains(x, y)) {
+                return display;
+            }
+        }
+        return primaryDisplayMode; // fallback to primary
     }
 
     @Override
