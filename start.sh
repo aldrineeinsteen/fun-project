@@ -32,7 +32,7 @@ while [[ $# -gt 0 ]]; do
       keep_alive="--keep-alive"
       shift # past argument
       ;;
-    --end-time)
+    --end-time|-e)
       end_time="--end-time $2"
       shift # past argument
       shift # past value

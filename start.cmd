@@ -40,6 +40,12 @@ if "%~1"=="--end-time" (
     shift
     goto parse_args
 )
+if "%~1"=="-e" (
+    set "end_time=--end-time %~2"
+    shift
+    shift
+    goto parse_args
+)
 shift
 goto parse_args
 
