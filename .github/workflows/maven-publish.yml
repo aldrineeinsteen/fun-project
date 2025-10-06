@@ -8,8 +8,10 @@
 name: GitHub Release
 
 on:
-  push:
+  # Only trigger on PR merges to main (not direct pushes)
+  pull_request:
     branches: [ main ]
+    types: [ closed ]
   workflow_dispatch: # Allow manual trigger
 
 env:
@@ -20,12 +22,15 @@ jobs:
   prepare:
     name: Prepare Release
     runs-on: ubuntu-latest
+    # Run if: manually triggered OR (PR was merged and not a Maven release plugin commit)
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && !contains(github.event.pull_request.title, '[maven-release-plugin]')) }}
     permissions:
       contents: write
       packages: write
     outputs:
       version: ${{ steps.extract_version.outputs.version }}
       tag: ${{ steps.extract_version.outputs.tag }}
+      skip_release: ${{ steps.check_release.outputs.skip_release }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -60,7 +65,129 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
+      - name: Check if release already exists
+        id: check_release
+        run: |
+          CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "Current version: $CURRENT_VERSION"
+          
+          # For SNAPSHOT versions, check if the release version (without -SNAPSHOT) already has a tag
+          if [[ "$CURRENT_VERSION" == *"-SNAPSHOT" ]]; then
+            RELEASE_VERSION=${CURRENT_VERSION%-SNAPSHOT}
+            echo "SNAPSHOT version detected, checking for release tag: v${RELEASE_VERSION}"
+            if git tag -l | grep -q "^v${RELEASE_VERSION}$"; then
+              echo "Release v${RELEASE_VERSION} already exists, skipping release process"
+              echo "skip_release=true" >> $GITHUB_OUTPUT
+            else
+              echo "Release v${RELEASE_VERSION} does not exist, proceeding with release"
+              echo "skip_release=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            # For non-SNAPSHOT versions, check for exact version tag
+            echo "Release version detected, checking for exact tag: v${CURRENT_VERSION}"
+            if git tag -l | grep -q "^v${CURRENT_VERSION}$"; then
+              echo "Release v${CURRENT_VERSION} already exists, skipping release process"
+              echo "skip_release=true" >> $GITHUB_OUTPUT
+            else
+              echo "Release v${CURRENT_VERSION} does not exist, proceeding with release"
+              echo "skip_release=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Log release skip
+        if: steps.check_release.outputs.skip_release == 'true'
+        run: |
+          CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "✅ Release v${CURRENT_VERSION} already exists and is published"
+          echo "🏷️  Git tag v${CURRENT_VERSION} found"
+          echo "⏭️  Skipping release process to avoid conflicts"
+          echo "📦 No new artifacts to publish"
+
+      - name: Create GitHub Release for existing tag
+        if: steps.check_release.outputs.skip_release == 'true'
+        run: |
+          CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          TAG="v${CURRENT_VERSION}"
+          
+          # Check if GitHub Release already exists
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "📋 GitHub Release $TAG already exists"
+          else
+            echo "🆕 Creating GitHub Release for existing tag $TAG"
+            
+            # Build the project to get artifacts
+            mvn -B clean package -DskipTests=true -Dmaven.javadoc.skip=true
+            
+            # Create distribution packages
+            mkdir -p release-package/{lib,plugins,bin,docs}
+            
+            # Copy main application jar
+            cp target/fun-project.jar release-package/
+            
+            # Copy dependencies  
+            cp -r target/lib/* release-package/lib/ 2>/dev/null || :
+            
+            # Copy plugin jars
+            cp -r target/plugins/* release-package/plugins/ 2>/dev/null || :
+            
+            # Copy start scripts
+            cp start.sh release-package/bin/ 2>/dev/null || :
+            cp start.cmd release-package/bin/ 2>/dev/null || :
+            
+            # Copy documentation
+            cp README.md release-package/docs/ 2>/dev/null || :
+            cp LICENSE release-package/docs/ 2>/dev/null || :
+            
+            # Create distribution archives
+            cd release-package
+            zip -r ../fun-project-${CURRENT_VERSION}-distribution.zip . -q
+            tar -czf ../fun-project-${CURRENT_VERSION}-distribution.tar.gz .
+            cd ..
+            
+            # Create checksums
+            sha256sum fun-project-${CURRENT_VERSION}-distribution.zip > fun-project-${CURRENT_VERSION}-distribution.zip.sha256
+            sha256sum fun-project-${CURRENT_VERSION}-distribution.tar.gz > fun-project-${CURRENT_VERSION}-distribution.tar.gz.sha256
+            sha256sum target/fun-project.jar > fun-project-${CURRENT_VERSION}.jar.sha256
+            
+            # Create release notes
+            cat > release_notes.md << EOF
+          ## Release $CURRENT_VERSION
+          
+          This release was created from an existing git tag.
+          
+          ### Key Features
+          - Java-based mouse movement utility with plugin architecture
+          - Dynamic plugin loading system
+          - Configurable timer with end-time specification
+          - Global hotkey support
+          - Cross-platform compatibility
+          
+          ### Downloads
+          - **fun-project.jar**: Main application JAR file
+          - **fun-project-${CURRENT_VERSION}-distribution.zip**: Complete distribution package (Windows)
+          - **fun-project-${CURRENT_VERSION}-distribution.tar.gz**: Complete distribution package (Unix/Linux)
+          - **SHA256 files**: Checksums for all packages
+          
+          **Full Changelog**: https://github.com/aldrineeinsteen/fun-project/releases
+          EOF
+            
+            # Create the GitHub Release with all distribution files
+            gh release create "$TAG" \
+              --title "Release $CURRENT_VERSION" \
+              --notes-file release_notes.md \
+              --latest \
+              target/fun-project.jar \
+              fun-project-${CURRENT_VERSION}-distribution.zip \
+              fun-project-${CURRENT_VERSION}-distribution.tar.gz \
+              fun-project-${CURRENT_VERSION}.jar.sha256 \
+              fun-project-${CURRENT_VERSION}-distribution.zip.sha256 \
+              fun-project-${CURRENT_VERSION}-distribution.tar.gz.sha256
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
       - name: Maven release prepare
+        if: steps.check_release.outputs.skip_release == 'false'
         run: |
           xvfb-run -a mvn release:prepare -s settings.xml \
             -Darguments="-Dmaven.javadoc.skip=true -Dmaven.test.skip=true" \
@@ -71,6 +198,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
       - name: Extract version information
+        if: steps.check_release.outputs.skip_release == 'false'
         id: extract_version
         run: |
           TAG=$(grep 'scm.tag=' release.properties | cut -d= -f2)
@@ -81,6 +209,7 @@ jobs:
           echo "Release version: $VERSION"
 
       - name: Upload release artifacts
+        if: steps.check_release.outputs.skip_release == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: release-artifacts
@@ -91,6 +220,7 @@ jobs:
   perform:
     name: Perform Release
     needs: [ prepare ]
+    if: needs.prepare.outputs.skip_release == 'false'
     runs-on: ubuntu-latest
     permissions:
       contents: write
