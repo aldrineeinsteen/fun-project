@@ -140,3 +140,5 @@ Uses Apache Commons CLI with dynamic option registration from plugins:
 - Cross-platform support (Windows/Unix shell scripts)
 
 **Critical**: The system is truly plugin-driven - adding new functionality requires only creating a plugin JAR with proper `plugin.yaml`, no core code changes.
+
+**Git Flow**: Follow feature branching and pull request workflow for contributions. Also ensure to have a release branch before raising PR to main, and also any raise PR via GH CLI.
