@@ -46,6 +46,16 @@ if "%~1"=="-e" (
     shift
     goto parse_args
 )
+if "%~1"=="--resume-next-day" (
+    set "resume_next_day=--resume-next-day"
+    shift
+    goto parse_args
+)
+if "%~1"=="-r" (
+    set "resume_next_day=--resume-next-day"
+    shift
+    goto parse_args
+)
 shift
 goto parse_args
 
@@ -56,7 +66,7 @@ goto check_jar_and_run
 
 :run_application
 echo Running fun-project.jar
-java -cp "%libFolder%;%pluginFolder%;%jarfile%" com.aldrineeinsteen.fun.Main %signature% %keep_alive% %end_time%
+java -cp "%libFolder%;%pluginFolder%;%jarfile%" com.aldrineeinsteen.fun.Main %signature% %keep_alive% %end_time% %resume_next_day%
 goto :eof
 
 :build_locally

@@ -1,0 +1,19 @@
+## KeepAliveTimer Configuration
+## This file contains default settings for the KeepAliveTimer plugin
+## Settings can be overridden via command line parameters
+
+# Default end time (24-hour format HH:mm)
+endTime: "18:30"
+
+# Default delay between mouse movements (in seconds)  
+delaySeconds: 30
+
+# Enable automatic resume the next day at the same end time
+resumeNextDay: false
+
+# Multi-monitor settings
+multiMonitor:
+  # Enable cross-monitor movement detection
+  enabled: true
+  # Log monitor switches
+  logSwitches: true

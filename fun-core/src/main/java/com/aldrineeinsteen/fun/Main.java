@@ -18,6 +18,7 @@ package com.aldrineeinsteen.fun;
 import com.aldrineeinsteen.fun.options.GlobalInputListener;
 import com.aldrineeinsteen.fun.options.helper.PluginRepository;
 import org.apache.commons.cli.*;
+import java.lang.reflect.Method;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.slf4j.Logger;
@@ -66,6 +67,13 @@ public class Main {
             //Object plugin = PluginRepository.getPlugin(pluginName);
             Runnable plugin = PluginRepository.getUtility(pluginName);
             if (plugin instanceof Runnable) {
+                // Configure utility with CLI parameters if it supports it
+                try {
+                    Method configureMethod = plugin.getClass().getMethod("configureFromCLI", CommandLine.class);
+                    configureMethod.invoke(plugin, cmd);
+                } catch (Exception e) {
+                    // Plugin doesn't support CLI configuration - that's okay
+                }
                 new Thread(plugin).start();
             }
         });

@@ -37,6 +37,10 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    --resume-next-day|-r)
+      resume_next_day="--resume-next-day"
+      shift # past argument
+      ;;
     *)    # unknown option
       shift # past argument
       ;;
@@ -46,7 +50,7 @@ done
 # Function to run the application
 run_application() {
     echo "Running fun-project.jar"
-    java -cp "$libFolder:$pluginFolder:$jarfile" com.aldrineeinsteen.fun.Main $signature $keep_alive $end_time
+    java -cp "$libFolder:$pluginFolder:$jarfile" com.aldrineeinsteen.fun.Main $signature $keep_alive $end_time $resume_next_day
 }
 
 # Function to build locally
