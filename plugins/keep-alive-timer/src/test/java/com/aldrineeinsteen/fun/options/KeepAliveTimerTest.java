@@ -79,4 +79,35 @@ public class KeepAliveTimerTest {
         assertTrue(p1.equals(p2));
         assertFalse(p1.equals(p3));
     }
+    
+    @Test
+    public void testDistanceCalculation() throws Exception {
+        // Skip test in headless environments
+        Assumptions.assumeFalse(GraphicsEnvironment.isHeadless(),
+            "Test skipped in headless environment - KeepAliveTimer requires display access");
+            
+        // Create rectangles for testing
+        Rectangle bounds1 = new Rectangle(0, 0, 1920, 1080);
+        Rectangle bounds2 = new Rectangle(1920, 0, 1280, 720);
+        
+        // Create a KeepAliveTimer instance
+        KeepAliveTimer timer = new KeepAliveTimer();
+        
+        // Use reflection to access the private method
+        java.lang.reflect.Method distanceMethod = KeepAliveTimer.class.getDeclaredMethod(
+            "distanceToRectangle", int.class, int.class, Rectangle.class);
+        distanceMethod.setAccessible(true);
+        
+        // Test point inside rectangle
+        double distance1 = (double) distanceMethod.invoke(timer, 500, 500, bounds1);
+        assertEquals(0.0, distance1, "Distance should be 0 for point inside rectangle");
+        
+        // Test point outside rectangle
+        double distance2 = (double) distanceMethod.invoke(timer, 2000, 500, bounds1);
+        assertTrue(distance2 > 0, "Distance should be positive for point outside rectangle");
+        
+        // Test point inside second rectangle
+        double distance3 = (double) distanceMethod.invoke(timer, 2000, 500, bounds2);
+        assertEquals(0.0, distance3, "Distance should be 0 for point inside rectangle");
+    }
 }
