@@ -172,15 +172,33 @@ public class KeepAliveTimer extends UtilityTemplate {
             int monitorRelativeX = xPosition - currentDisplayMode.getX();
             int monitorRelativeY = yPosition - currentDisplayMode.getY();
 
+            // Calculate the center of the current monitor
+            int centerX = screenWidth / 2;
+            int centerY = screenHeight / 2;
+            
+            // Calculate distance from center
+            int distanceFromCenterX = Math.abs(monitorRelativeX - centerX);
+            int distanceFromCenterY = Math.abs(monitorRelativeY - centerY);
+            
             if (monitorRelativeX < screenWidth && monitorRelativeY < screenHeight) {
                 // Small movement within the current monitor
                 int increment = monitorRelativeX % 2 == 0 ? 1 : -1;
                 monitorRelativeX += increment;
                 monitorRelativeY += increment;
             } else {
-                // Reset to a position within the current monitor, not (0,0) absolute
-                monitorRelativeX = 10; // Small offset from edge to avoid triggering edge actions
-                monitorRelativeY = 10;
+                // If we're outside the monitor bounds, move towards the center
+                // instead of resetting to a fixed position
+                if (monitorRelativeX >= screenWidth) {
+                    monitorRelativeX = screenWidth - 50;
+                } else if (monitorRelativeX < 0) {
+                    monitorRelativeX = 50;
+                }
+                
+                if (monitorRelativeY >= screenHeight) {
+                    monitorRelativeY = screenHeight - 50;
+                } else if (monitorRelativeY < 0) {
+                    monitorRelativeY = 50;
+                }
             }
 
             // Convert back to absolute coordinates for robot.mouseMove
@@ -193,8 +211,11 @@ public class KeepAliveTimer extends UtilityTemplate {
             // Store the position we moved to
             lastAutoPosition = new Point(absoluteX, absoluteY);
             
-            logger.info("Updated position - {}, {} on monitor: {}",
-                    absoluteX, absoluteY, currentDisplayMode.getDevice().getIDstring());
+            logger.info("Updated position - {}, {} on monitor: {} (monitor-relative: {},{}, bounds: {})",
+                    absoluteX, absoluteY,
+                    currentDisplayMode.getDevice().getIDstring(),
+                    monitorRelativeX, monitorRelativeY,
+                    currentDisplayMode.getBounds());
         }
     }
     
@@ -202,11 +223,19 @@ public class KeepAliveTimer extends UtilityTemplate {
      * Detect which monitor contains the given coordinates
      */
     private DisplayModeWrapper detectCurrentMonitor(int x, int y) {
+        logger.debug("Detecting monitor for position ({},{})", x, y);
         for (DisplayModeWrapper display : allDisplayModes) {
-            if (display.getBounds().contains(x, y)) {
+            Rectangle bounds = display.getBounds();
+            boolean contains = bounds.contains(x, y);
+            logger.debug("Checking monitor: {} with bounds {} - contains: {}",
+                    display.getDevice().getIDstring(), bounds, contains);
+            if (contains) {
+                logger.debug("Found monitor: {} for position ({},{})",
+                        display.getDevice().getIDstring(), x, y);
                 return display;
             }
         }
+        logger.debug("No monitor found for position ({},{}), falling back to primary", x, y);
         return primaryDisplayMode; // fallback to primary
     }
 
