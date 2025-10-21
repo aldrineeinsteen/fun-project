@@ -19,6 +19,11 @@ public class KeepAliveTimer extends UtilityTemplate {
     private LocalTime endTime;
     private final Robot robot = new Robot();
     
+    // Fields to track mouse position changes
+    private Point lastAutoPosition = null;
+    private Point lastKnownPosition = null;
+    private boolean userMovedMouse = false;
+    
     // Multi-monitor support
     private final GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
     private final GraphicsDevice[] allGraphicsDevices = graphicsEnvironment.getScreenDevices();
@@ -90,16 +95,18 @@ public class KeepAliveTimer extends UtilityTemplate {
     private void logAvailableMonitors() {
         logger.info("=== Multi-Monitor Detection Results ===");
         logger.info("Total monitors detected: {}", allDisplayModes.size());
-        
+
         for (int i = 0; i < allDisplayModes.size(); i++) {
             DisplayModeWrapper display = allDisplayModes.get(i);
             GraphicsDevice device = display.getDevice();
             boolean isPrimary = device.equals(graphicsEnvironment.getDefaultScreenDevice());
-            
-            logger.info("Monitor {}: {}x{} {} - Device ID: {} {}",
-                    i + 1, 
-                    display.getWidth(), 
+
+            logger.info("Monitor {}: {}x{} at ({},{}) {} - Device ID: {} {}",
+                    i + 1,
+                    display.getWidth(),
                     display.getHeight(),
+                    display.getX(),
+                    display.getY(),
                     isPrimary ? "(PRIMARY)" : "",
                     device.getIDstring(),
                     isPrimary ? "- ACTIVE" : ""
@@ -125,32 +132,69 @@ public class KeepAliveTimer extends UtilityTemplate {
         while (LocalTime.now().isBefore(endTime)) {
             robot.delay(delayMilliseconds);
 
+            // Get current mouse position
             PointerInfo pointerInfo = MouseInfo.getPointerInfo();
-            int xPosition = pointerInfo.getLocation().x;
-            int yPosition = pointerInfo.getLocation().y;
+            Point currentPosition = pointerInfo.getLocation();
+            int xPosition = currentPosition.x;
+            int yPosition = currentPosition.y;
+
+            // Check if user has moved the mouse since our last automatic movement
+            if (lastAutoPosition != null && lastKnownPosition != null) {
+                // If current position is different from last auto position but also different from last known position,
+                // then user has moved the mouse
+                if (!currentPosition.equals(lastAutoPosition) && !currentPosition.equals(lastKnownPosition)) {
+                    userMovedMouse = true;
+                    logger.debug("User moved mouse to {},{}", xPosition, yPosition);
+                }
+            }
+            
+            // Update last known position
+            lastKnownPosition = new Point(xPosition, yPosition);
 
             // Detect which monitor the mouse is currently on
             DisplayModeWrapper currentMonitor = detectCurrentMonitor(xPosition, yPosition);
             if (currentMonitor != null && !currentMonitor.equals(currentDisplayMode)) {
-                logger.info("Mouse moved to different monitor: {} - Updating active display", 
+                logger.info("Mouse moved to different monitor: {} - Updating active display",
                         currentMonitor.getDevice().getIDstring());
                 currentDisplayMode = currentMonitor;
                 screenHeight = currentDisplayMode.getHeight() - 1;
                 screenWidth = currentDisplayMode.getWidth() - 1;
             }
 
-            if (xPosition < screenWidth && yPosition < screenHeight) {
-                int increment = xPosition % 2 == 0 ? 1 : -1;
-                xPosition += increment;
-                yPosition += increment;
-            } else {
-                yPosition = 0;
-                xPosition = 0;
+            // If user moved the mouse, don't move it automatically this time
+            if (userMovedMouse) {
+                logger.info("Skipping automatic movement as user moved the mouse");
+                userMovedMouse = false;
+                continue;
             }
 
-            robot.mouseMove(xPosition, yPosition);
-            logger.info("Updated position - {}, {} on monitor: {}", 
-                    xPosition, yPosition, currentDisplayMode.getDevice().getIDstring());
+            // Calculate monitor-relative coordinates
+            int monitorRelativeX = xPosition - currentDisplayMode.getX();
+            int monitorRelativeY = yPosition - currentDisplayMode.getY();
+
+            if (monitorRelativeX < screenWidth && monitorRelativeY < screenHeight) {
+                // Small movement within the current monitor
+                int increment = monitorRelativeX % 2 == 0 ? 1 : -1;
+                monitorRelativeX += increment;
+                monitorRelativeY += increment;
+            } else {
+                // Reset to a position within the current monitor, not (0,0) absolute
+                monitorRelativeX = 10; // Small offset from edge to avoid triggering edge actions
+                monitorRelativeY = 10;
+            }
+
+            // Convert back to absolute coordinates for robot.mouseMove
+            int absoluteX = monitorRelativeX + currentDisplayMode.getX();
+            int absoluteY = monitorRelativeY + currentDisplayMode.getY();
+
+            // Move the mouse
+            robot.mouseMove(absoluteX, absoluteY);
+            
+            // Store the position we moved to
+            lastAutoPosition = new Point(absoluteX, absoluteY);
+            
+            logger.info("Updated position - {}, {} on monitor: {}",
+                    absoluteX, absoluteY, currentDisplayMode.getDevice().getIDstring());
         }
     }
     
@@ -159,9 +203,7 @@ public class KeepAliveTimer extends UtilityTemplate {
      */
     private DisplayModeWrapper detectCurrentMonitor(int x, int y) {
         for (DisplayModeWrapper display : allDisplayModes) {
-            GraphicsDevice device = display.getDevice();
-            Rectangle bounds = device.getDefaultConfiguration().getBounds();
-            if (bounds.contains(x, y)) {
+            if (display.getBounds().contains(x, y)) {
                 return display;
             }
         }
