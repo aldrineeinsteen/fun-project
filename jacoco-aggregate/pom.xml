@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>com.aldrineeinsteen</groupId>
+        <artifactId>fun-project</artifactId>
+        <version>1.2.46-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    
+    <artifactId>jacoco-aggregate</artifactId>
+    <packaging>pom</packaging>
+    <name>JaCoCo Aggregate Report</name>
+    <description>Aggregates JaCoCo coverage reports from all modules</description>
+    
+    <dependencies>
+        <!-- Include all modules to aggregate coverage -->
+        <dependency>
+            <groupId>com.aldrineeinsteen</groupId>
+            <artifactId>fun-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aldrineeinsteen</groupId>
+            <artifactId>keep-alive-timer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aldrineeinsteen</groupId>
+            <artifactId>plugin-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aldrineeinsteen</groupId>
+            <artifactId>utility-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <executions>
+                    <execution>
+                        <id>report-aggregate</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                        <configuration>
+                            <title>JaCoCo Aggregate Coverage Report</title>
+                            <footer>Code Coverage Report for Fun Project</footer>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-aggregate</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
+<!-- Made with Bob -->

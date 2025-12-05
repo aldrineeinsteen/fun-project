@@ -99,7 +99,7 @@ Uses Apache Commons CLI with dynamic option registration from plugins:
 - `-e/--end-time`: Set end time (HH:mm format) 
 - `-sec/--seconds`: Override delay interval
 - `-sign/--signature`: Enable signature selector
-- Global hotkeys supported (e.g., `Ctrl+Shift+Alt+S`)
+- Global hotkeys supported (OS-aware: `⌘⇧⌥S` on Mac, `Ctrl+Shift+Alt+S` on Windows/Linux)
 
 ## Dynamic Plugin Architecture Details
 

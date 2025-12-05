@@ -16,6 +16,8 @@
 package com.aldrineeinsteen.fun;
 
 import com.aldrineeinsteen.fun.options.GlobalInputListener;
+import com.aldrineeinsteen.fun.options.PluginTemplate;
+import com.aldrineeinsteen.fun.options.helper.DashboardInitializer;
 import com.aldrineeinsteen.fun.options.helper.PluginRepository;
 import org.apache.commons.cli.*;
 import org.jline.terminal.Terminal;
@@ -27,13 +29,14 @@ import java.io.IOException;
 
 public class Main {
 
-    private static final PluginRepository pluginRepository = new PluginRepository();
-
     private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws IOException, ParseException {
+        // Initialize plugin repository
+        PluginRepository pluginRepository = new PluginRepository();
         pluginRepository.init();
 
+        // Parse command line arguments
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd;
 
@@ -52,24 +55,87 @@ public class Main {
             throw e;
         }
 
-        // Only set up terminal and listeners if we're not just showing help
-        Terminal terminal = TerminalBuilder.builder()
-                .system(false)
-                .streams(System.in, System.out)
-                .build();
-        terminal.enterRawMode();
+        // Set up global input listener for keyboard shortcuts (always needed)
         GlobalInputListener globalInputListener = new GlobalInputListener();
         globalInputListener.registerHook();
+        
+        // Set up terminal if not in dashboard mode
+        boolean dashboardEnabled = cmd.hasOption("dash");
+        if (!dashboardEnabled) {
+            Terminal terminal = TerminalBuilder.builder()
+                    .system(false)
+                    .streams(System.in, System.out)
+                    .build();
+            terminal.enterRawMode();
+        }
 
-        // Execute the action for each loaded plugin if needed
+        // Initialize dashboard first if enabled
+        DashboardInitializer dashboardInitializer = null;
+        if (dashboardEnabled) {
+            dashboardInitializer = new DashboardInitializer();
+            dashboardInitializer.initialize();
+            // Register all plugins with dashboard (regardless of whether they're started)
+            dashboardInitializer.registerPlugins();
+        }
+        
+        // Load and start plugins based on command line options
+        loadAndStartPlugins(cmd);
+        
+        // Start dashboard rendering
+        if (dashboardEnabled && dashboardInitializer != null) {
+            dashboardInitializer.start();
+        }
+    }
+    
+    /**
+     * Load and start plugins based on command line options.
+     * This method normalizes plugin loading regardless of dashboard mode.
+     */
+    private static void loadAndStartPlugins(CommandLine cmd) {
         PluginRepository.getLoadedPlugins().forEach(pluginName -> {
-            //Object plugin = PluginRepository.getPlugin(pluginName);
-            Runnable plugin = PluginRepository.getUtility(pluginName);
-            if (plugin instanceof Runnable) {
-                new Thread(plugin).start();
+            // Determine if this plugin should be started based on command line options
+            boolean shouldStart = shouldStartPlugin(pluginName, cmd);
+            
+            if (!shouldStart) {
+                logger.debug("Plugin {} not started - option not provided", pluginName);
+                return;
+            }
+            
+            logger.info("Starting plugin: {}", pluginName);
+            
+            // Start utilities
+            Runnable utility = PluginRepository.getUtility(pluginName);
+            if (utility != null) {
+                new Thread(utility).start();
+            }
+            
+            // Start plugins
+            PluginTemplate plugin = PluginRepository.getPlugin(pluginName);
+            if (plugin != null) {
+                plugin.start();
             }
         });
-
-        // Additional command line options processing
+    }
+    
+    /**
+     * Determine if a plugin should be started based on command line options.
+     * Add new plugin checks here as needed.
+     */
+    private static boolean shouldStartPlugin(String pluginName, CommandLine cmd) {
+        // KeepAliveTimer: check for -k or --keep-alive
+        if (pluginName.contains("KeepAliveTimer") && cmd.hasOption("k")) {
+            return true;
+        }
+        
+        // SignatureSelector: check for --sign
+        if (pluginName.contains("SignatureSelector") && cmd.hasOption("sign")) {
+            return true;
+        }
+        
+        // Add more plugin checks here as needed
+        
+        return false;
     }
 }
+
+// Made with Bob

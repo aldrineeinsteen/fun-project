@@ -11,3 +11,10 @@ option:
 shortcuts:
   - key: "CTRL + SHIFT + ALT + S"
     action: "getRandomSignature"
+  - key: "META + SHIFT + ALT + S"
+    action: "getRandomSignature"
+dashboard:
+  enabled: true
+  position: 20
+  column: 1
+  row: 1

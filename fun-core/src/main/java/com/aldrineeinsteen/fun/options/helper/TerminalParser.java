@@ -71,7 +71,7 @@ public class TerminalParser implements Runnable {
      */
     private PluginTemplate findPluginByAction(String actionName) {
         // Search through shortcut actions to find plugins that support this action
-        for (PluginRepository.ShortcutAction shortcutAction : PluginRepository.getShortcutActions().values()) {
+        for (PluginMetadata.ShortcutAction shortcutAction : PluginRepository.getShortcutActions().values()) {
             if (actionName.equals(shortcutAction.getAction())) {
                 PluginTemplate plugin = PluginRepository.getPlugin(shortcutAction.getPlugin());
                 if (plugin != null && plugin.isReady()) {
