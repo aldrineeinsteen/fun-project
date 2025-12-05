@@ -29,7 +29,7 @@ public class PluginRepositoryTest {
 
     @Test
     public void testGetShortcutActions_ReturnsValidMap() {
-        Map<String, PluginRepository.ShortcutAction> shortcuts = PluginRepository.getShortcutActions();
+        Map<String, PluginMetadata.ShortcutAction> shortcuts = PluginRepository.getShortcutActions();
         assertNotNull(shortcuts, "Shortcuts map should not be null");
     }
 

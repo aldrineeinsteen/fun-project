@@ -29,11 +29,11 @@ import java.io.IOException;
 
 public class Main {
 
-    private static final PluginRepository pluginRepository = new PluginRepository();
     private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws IOException, ParseException {
         // Initialize plugin repository
+        PluginRepository pluginRepository = new PluginRepository();
         pluginRepository.init();
 
         // Parse command line arguments
@@ -69,14 +69,20 @@ public class Main {
             terminal.enterRawMode();
         }
 
+        // Initialize dashboard first if enabled
+        DashboardInitializer dashboardInitializer = null;
+        if (dashboardEnabled) {
+            dashboardInitializer = new DashboardInitializer();
+            dashboardInitializer.initialize();
+            // Register all plugins with dashboard (regardless of whether they're started)
+            dashboardInitializer.registerPlugins();
+        }
+        
         // Load and start plugins based on command line options
         loadAndStartPlugins(cmd);
         
-        // Initialize and start dashboard if enabled
-        if (dashboardEnabled) {
-            DashboardInitializer dashboardInitializer = new DashboardInitializer();
-            dashboardInitializer.initialize();
-            dashboardInitializer.registerPlugins();
+        // Start dashboard rendering
+        if (dashboardEnabled && dashboardInitializer != null) {
             dashboardInitializer.start();
         }
     }
@@ -97,13 +103,13 @@ public class Main {
             
             logger.info("Starting plugin: {}", pluginName);
             
-            // Start the utility thread if it's a utility
+            // Start utilities
             Runnable utility = PluginRepository.getUtility(pluginName);
             if (utility != null) {
                 new Thread(utility).start();
             }
             
-            // Start regular plugins (call their start() method)
+            // Start plugins
             PluginTemplate plugin = PluginRepository.getPlugin(pluginName);
             if (plugin != null) {
                 plugin.start();

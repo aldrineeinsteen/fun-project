@@ -17,23 +17,28 @@ libFolder=target/lib/*
 pluginFolder=target/plugins/*
 
 # Initialize optional parameters with defaults
-signature="--signature"
-keep_alive="--keep-alive"  # Default value for keep-alive
-end_time=""
+signature="--sign"
+keep_alive="-k"
+end_time="-e 1830"
+dashboard="--dash"
 
 # Parse optional arguments
 while [[ $# -gt 0 ]]; do
   case $1 in
-    --signature)
-      signature="--signature"
+    --signature|--sign)
+      signature="--sign"
       shift # past argument
       ;;
-    --keep-alive)
-      keep_alive="--keep-alive"
+    --keep-alive|-k)
+      keep_alive="-k"
+      shift # past argument
+      ;;
+    --dashboard|--dash)
+      dashboard="--dash"
       shift # past argument
       ;;
     --end-time|-e)
-      end_time="--end-time $2"
+      end_time="-e $2"
       shift # past argument
       shift # past value
       ;;
@@ -46,7 +51,7 @@ done
 # Function to run the application
 run_application() {
     echo "Running fun-project.jar"
-    java -cp "$libFolder:$pluginFolder:$jarfile" com.aldrineeinsteen.fun.Main $signature $keep_alive $end_time
+    java -cp "$libFolder:$pluginFolder:$jarfile" com.aldrineeinsteen.fun.Main $signature $keep_alive $dashboard $end_time
 }
 
 # Function to build locally

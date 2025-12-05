@@ -25,14 +25,11 @@ public class KeepAliveTimerDashboardTest {
         // Verify expected keys are present
         assertTrue(data.containsKey("End Time"), "Should contain End Time");
         assertTrue(data.containsKey("Time Remaining"), "Should contain Time Remaining");
-        assertTrue(data.containsKey("Next Move"), "Should contain Next Move");
-        assertTrue(data.containsKey("Mode"), "Should contain Mode");
+        assertTrue(data.containsKey("Delay"), "Should contain Delay");
         assertTrue(data.containsKey("Status"), "Should contain Status");
-        assertTrue(data.containsKey("Activity"), "Should contain Activity");
         
-        // Verify some values
-        assertEquals("jitter", data.get("Mode"));
-        assertEquals("Stopped", data.get("Status")); // Should be stopped initially
+        // Verify some values - Status contains ANSI color codes
+        assertTrue(data.get("Status").contains("Active"), "Status should contain 'Active'");
         
         System.out.println("Dashboard Data:");
         data.forEach((key, value) -> System.out.println("  " + key + ": " + value));

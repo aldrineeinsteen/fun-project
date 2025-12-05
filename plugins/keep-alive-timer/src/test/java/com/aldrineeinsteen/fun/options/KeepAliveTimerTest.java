@@ -81,33 +81,22 @@ public class KeepAliveTimerTest {
     }
     
     @Test
-    public void testDistanceCalculation() throws Exception {
+    public void testMonitorManagerIntegration() throws Exception {
         // Skip test in headless environments
         Assumptions.assumeFalse(GraphicsEnvironment.isHeadless(),
             "Test skipped in headless environment - KeepAliveTimer requires display access");
             
-        // Create rectangles for testing
-        Rectangle bounds1 = new Rectangle(0, 0, 1920, 1080);
-        Rectangle bounds2 = new Rectangle(1920, 0, 1280, 720);
-        
         // Create a KeepAliveTimer instance
         KeepAliveTimer timer = new KeepAliveTimer();
         
-        // Use reflection to access the private method
-        java.lang.reflect.Method distanceMethod = KeepAliveTimer.class.getDeclaredMethod(
-            "distanceToRectangle", int.class, int.class, Rectangle.class);
-        distanceMethod.setAccessible(true);
+        // Verify MonitorManager is properly initialized
+        assertNotNull(timer.getMonitorManager(), "MonitorManager should be initialized");
+        assertNotNull(timer.getPositionTracker(), "MousePositionTracker should be initialized");
         
-        // Test point inside rectangle
-        double distance1 = (double) distanceMethod.invoke(timer, 500, 500, bounds1);
-        assertEquals(0.0, distance1, "Distance should be 0 for point inside rectangle");
-        
-        // Test point outside rectangle
-        double distance2 = (double) distanceMethod.invoke(timer, 2000, 500, bounds1);
-        assertTrue(distance2 > 0, "Distance should be positive for point outside rectangle");
-        
-        // Test point inside second rectangle
-        double distance3 = (double) distanceMethod.invoke(timer, 2000, 500, bounds2);
-        assertEquals(0.0, distance3, "Distance should be 0 for point inside rectangle");
+        // Verify monitor detection works
+        DisplayModeWrapper currentDisplay = timer.getMonitorManager().getCurrentDisplayMode();
+        assertNotNull(currentDisplay, "Should have a current display mode");
+        assertTrue(currentDisplay.getWidth() > 0, "Display width should be positive");
+        assertTrue(currentDisplay.getHeight() > 0, "Display height should be positive");
     }
 }

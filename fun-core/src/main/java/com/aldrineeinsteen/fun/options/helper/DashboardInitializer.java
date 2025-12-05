@@ -76,10 +76,10 @@ public class DashboardInitializer {
         systemInfo.put("Active Plugins", String.join(", ", enabledPlugins));
         
         // List shortcuts
-        Map<String, PluginRepository.ShortcutAction> shortcuts = PluginRepository.getShortcutActions();
+        Map<String, PluginMetadata.ShortcutAction> shortcuts = PluginRepository.getShortcutActions();
         if (!shortcuts.isEmpty()) {
             systemInfo.put("Global Shortcuts", String.valueOf(shortcuts.size()));
-            for (Map.Entry<String, PluginRepository.ShortcutAction> entry : shortcuts.entrySet()) {
+            for (Map.Entry<String, PluginMetadata.ShortcutAction> entry : shortcuts.entrySet()) {
                 String pluginSimpleName = entry.getValue().getPlugin().substring(entry.getValue().getPlugin().lastIndexOf('.') + 1);
                 systemInfo.put("  " + entry.getKey(), pluginSimpleName + ":" + entry.getValue().getAction());
             }
@@ -110,6 +110,7 @@ public class DashboardInitializer {
                 logger.debug("Registered dashboard renderer for plugin: {}", pluginName);
             }
         });
+        logger.info("Dashboard registration complete. Registered {} renderers", dashboardManager.getRendererCount());
     }
     
     /**
