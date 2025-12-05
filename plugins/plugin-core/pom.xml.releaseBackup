@@ -4,18 +4,10 @@
     <parent>
         <groupId>com.aldrineeinsteen</groupId>
         <artifactId>fun-project</artifactId>
-        <version>1.2.46</version>
+        <version>1.2.46-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>utility-core</artifactId>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.aldrineeinsteen</groupId>
-            <artifactId>plugin-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+    <artifactId>plugin-core</artifactId>
 
 </project>
