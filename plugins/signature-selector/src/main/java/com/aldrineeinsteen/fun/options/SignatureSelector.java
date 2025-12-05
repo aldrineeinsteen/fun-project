@@ -19,6 +19,8 @@ public class SignatureSelector extends PluginTemplate {
     private final List<Signature> weightedSignatures = new ArrayList<>();
     private final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     private final ClipboardOwner clipboardOwner = null;
+    private String lastSelectedSignature = null;
+    private long lastSelectionTime = 0;
 
     public SignatureSelector() {
         logger.info("Plugin: '{}' initialised successfully", SignatureSelector.class.getSimpleName());
@@ -68,6 +70,8 @@ public class SignatureSelector extends PluginTemplate {
 
         String selectedSignature = weightedSignatures.get(random.nextInt(weightedSignatures.size())).getText();
         clipboard.setContents(new StringSelection(selectedSignature), clipboardOwner);
+        lastSelectedSignature = selectedSignature;
+        lastSelectionTime = System.currentTimeMillis();
         logger.info("Random signature selected and copied into the clipboard: {}", selectedSignature);
         return selectedSignature;
     }
@@ -79,5 +83,40 @@ public class SignatureSelector extends PluginTemplate {
         } else {
             logger.error("Unrecognized action: {}", actionName);
         }
+    }
+    
+    /**
+     * Get dashboard data for display
+     */
+    @Override
+    public Map<String, String> getDashboardData() {
+        Map<String, String> data = new LinkedHashMap<>();
+        
+        // Display the actual working shortcut (Ctrl+Opt+Shift+S on Mac, Ctrl+Shift+Alt+S on others)
+        String os = System.getProperty("os.name").toLowerCase();
+        String shortcut = os.contains("mac") ? "Ctrl+Opt+Shift+S" : "Ctrl+Shift+Alt+S";
+        
+        data.put("Shortcut", shortcut);
+        data.put("Status", started.get() ? "\u001B[32m✓ Enabled\u001B[0m" : "\u001B[31m✗ Disabled\u001B[0m");
+        data.put("Signatures Loaded", String.valueOf(weightedSignatures.size()));
+        
+        if (lastSelectedSignature != null) {
+            data.put("Last Selection", lastSelectedSignature.length() > 30
+                ? lastSelectedSignature.substring(0, 27) + "..."
+                : lastSelectedSignature);
+            
+            long secondsAgo = (System.currentTimeMillis() - lastSelectionTime) / 1000;
+            if (secondsAgo < 60) {
+                data.put("Selected", secondsAgo + "s ago");
+            } else if (secondsAgo < 3600) {
+                data.put("Selected", (secondsAgo / 60) + "m ago");
+            } else {
+                data.put("Selected", (secondsAgo / 3600) + "h ago");
+            }
+        } else {
+            data.put("Last Selection", "None");
+        }
+        
+        return data;
     }
 }

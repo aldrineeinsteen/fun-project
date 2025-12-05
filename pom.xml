@@ -11,6 +11,7 @@
         <module>plugins</module>
         <module>plugins/plugin-core</module>
         <module>plugins/utility-core</module>
+        <module>jacoco-aggregate</module>
     </modules>
 
     <properties>
@@ -277,9 +278,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
-                    <argLine>
-                        -javaagent:${settings.localRepository}/org/mockito/mockito-core/5.14.2/mockito-core-5.14.2.jar
-                    </argLine>
+                    <!-- Use @{argLine} to preserve JaCoCo's agent configuration -->
+                    <argLine>@{argLine} -javaagent:${settings.localRepository}/org/mockito/mockito-core/5.14.2/mockito-core-5.14.2.jar</argLine>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,5 +1,6 @@
 package com.aldrineeinsteen.fun.options;
 
+import com.aldrineeinsteen.fun.options.helper.PluginMetadata;
 import com.aldrineeinsteen.fun.options.helper.PluginRepository;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
@@ -28,7 +29,7 @@ public class GlobalInputListener implements NativeKeyListener {
         logger.debug("Key pressed: {}", keyCombination);
 
         // Retrieve the ShortcutAction object
-        PluginRepository.ShortcutAction actionInfo = PluginRepository.getShortcutActions().get(keyCombination);
+        PluginMetadata.ShortcutAction actionInfo = PluginRepository.getShortcutActions().get(keyCombination);
         if (actionInfo != null) {
             logger.debug("Executing action: {} in plugin: {}", actionInfo.getAction(), actionInfo.getPlugin());
             // Execute the action for the specific plugin

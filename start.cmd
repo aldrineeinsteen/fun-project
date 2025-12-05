@@ -17,31 +17,52 @@ set "libFolder=target\lib\*"
 set "pluginFolder=target\plugins\*"
 
 REM Initialize optional parameters with defaults
-set "signature=--signature"
-set "keep_alive=--keep-alive"
-set "end_time="
+set "signature=--sign"
+set "keep_alive=-k"
+set "end_time=-e 1830"
+set "dashboard=--dash"
 
 REM Parse optional arguments
 :parse_args
 if "%~1"=="" goto after_args
 if "%~1"=="--signature" (
-    set "signature=--signature"
+    set "signature=--sign"
+    shift
+    goto parse_args
+)
+if "%~1"=="--sign" (
+    set "signature=--sign"
     shift
     goto parse_args
 )
 if "%~1"=="--keep-alive" (
-    set "keep_alive=--keep-alive"
+    set "keep_alive=-k"
+    shift
+    goto parse_args
+)
+if "%~1"=="-k" (
+    set "keep_alive=-k"
+    shift
+    goto parse_args
+)
+if "%~1"=="--dashboard" (
+    set "dashboard=--dash"
+    shift
+    goto parse_args
+)
+if "%~1"=="--dash" (
+    set "dashboard=--dash"
     shift
     goto parse_args
 )
 if "%~1"=="--end-time" (
-    set "end_time=--end-time %~2"
+    set "end_time=-e %~2"
     shift
     shift
     goto parse_args
 )
 if "%~1"=="-e" (
-    set "end_time=--end-time %~2"
+    set "end_time=-e %~2"
     shift
     shift
     goto parse_args
@@ -56,7 +77,7 @@ goto check_jar_and_run
 
 :run_application
 echo Running fun-project.jar
-java -cp "%libFolder%;%pluginFolder%;%jarfile%" com.aldrineeinsteen.fun.Main %signature% %keep_alive% %end_time%
+java -cp "%libFolder%;%pluginFolder%;%jarfile%" com.aldrineeinsteen.fun.Main %signature% %keep_alive% %dashboard% %end_time%
 goto :eof
 
 :build_locally

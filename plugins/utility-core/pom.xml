@@ -10,4 +10,12 @@
 
     <artifactId>utility-core</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.aldrineeinsteen</groupId>
+            <artifactId>plugin-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>
