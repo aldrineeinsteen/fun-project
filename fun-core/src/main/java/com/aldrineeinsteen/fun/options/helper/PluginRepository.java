@@ -213,6 +213,9 @@ public class PluginRepository {
         // Add standard help option
         options.addOption("h", "help", false, "Show this help message");
         
+        // Add dashboard option
+        options.addOption("dash", "dashboard", false, "Enable TUI dashboard mode");
+        
         logger.info("Initializing dynamic plugin discovery system...");
         try {
             List<URL> urls = new ArrayList<>();
@@ -276,6 +279,9 @@ public class PluginRepository {
             if (pluginClassName != null) {
                 instantiateAndRegisterPlugin(pluginClassName);
                 addLoadedPlugin(pluginClassName);
+                
+                // Parse dashboard configuration
+                parseDashboardConfig(pluginClassName, yamlData);
             }
 
             parseOptions(yamlData, pluginInfo);
@@ -467,6 +473,91 @@ public class PluginRepository {
             } catch (ClassCastException e) {
                 logger.error("Invalid shortcut configuration format for plugin: {}, shortcut: {}", pluginClassName, shortcut, e);
             }
+        }
+    }
+    
+    /**
+     * Parse dashboard configuration from plugin.yaml
+     */
+    @SuppressWarnings("unchecked")
+    private void parseDashboardConfig(String pluginClassName, Map<String, Object> yamlData) {
+        Object dashboardObj = yamlData.get("dashboard");
+        if (dashboardObj == null) {
+            logger.debug("No dashboard configuration for plugin: {}", pluginClassName);
+            return;
+        }
+        
+        if (!(dashboardObj instanceof Map)) {
+            logger.error("Dashboard configuration must be a map for plugin: {}", pluginClassName);
+            return;
+        }
+        
+        Map<String, Object> dashboardConfig = (Map<String, Object>) dashboardObj;
+        
+        // Try to get utility instance first
+        Runnable utility = utilities.get(pluginClassName);
+        PluginTemplate plugin = plugins.get(pluginClassName);
+        
+        com.aldrineeinsteen.fun.options.DashboardRenderer renderer = null;
+        
+        // Check utility first
+        if (utility instanceof com.aldrineeinsteen.fun.options.UtilityTemplate) {
+            renderer = (com.aldrineeinsteen.fun.options.UtilityTemplate) utility;
+        }
+        // Then check plugin
+        else if (plugin instanceof com.aldrineeinsteen.fun.options.PluginTemplate) {
+            renderer = (com.aldrineeinsteen.fun.options.PluginTemplate) plugin;
+        }
+        
+        if (renderer == null) {
+            logger.debug("No dashboard-capable instance found for plugin: {}", pluginClassName);
+            return;
+        }
+        
+        // Apply dashboard configuration
+        Boolean enabled = (Boolean) dashboardConfig.get("enabled");
+        if (enabled != null) {
+            if (renderer instanceof com.aldrineeinsteen.fun.options.UtilityTemplate) {
+                ((com.aldrineeinsteen.fun.options.UtilityTemplate) renderer).setDashboardEnabled(enabled);
+            } else if (renderer instanceof com.aldrineeinsteen.fun.options.PluginTemplate) {
+                ((com.aldrineeinsteen.fun.options.PluginTemplate) renderer).setDashboardEnabled(enabled);
+            }
+            logger.debug("Set dashboard enabled={} for plugin: {}", enabled, pluginClassName);
+        }
+        
+        Object positionObj = dashboardConfig.get("position");
+        if (positionObj != null) {
+            int position = positionObj instanceof Integer ? (Integer) positionObj : 100;
+            if (renderer instanceof com.aldrineeinsteen.fun.options.UtilityTemplate) {
+                ((com.aldrineeinsteen.fun.options.UtilityTemplate) renderer).setDashboardPosition(position);
+            } else if (renderer instanceof com.aldrineeinsteen.fun.options.PluginTemplate) {
+                ((com.aldrineeinsteen.fun.options.PluginTemplate) renderer).setDashboardPosition(position);
+            }
+            logger.debug("Set dashboard position={} for plugin: {}", position, pluginClassName);
+        }
+        
+        // Parse column configuration
+        Object columnObj = dashboardConfig.get("column");
+        if (columnObj != null) {
+            int column = columnObj instanceof Integer ? (Integer) columnObj : 1;
+            if (renderer instanceof com.aldrineeinsteen.fun.options.UtilityTemplate) {
+                ((com.aldrineeinsteen.fun.options.UtilityTemplate) renderer).setDashboardColumn(column);
+            } else if (renderer instanceof com.aldrineeinsteen.fun.options.PluginTemplate) {
+                ((com.aldrineeinsteen.fun.options.PluginTemplate) renderer).setDashboardColumn(column);
+            }
+            logger.debug("Set dashboard column={} for plugin: {}", column, pluginClassName);
+        }
+        
+        // Parse row configuration
+        Object rowObj = dashboardConfig.get("row");
+        if (rowObj != null) {
+            int row = rowObj instanceof Integer ? (Integer) rowObj : 1;
+            if (renderer instanceof com.aldrineeinsteen.fun.options.UtilityTemplate) {
+                ((com.aldrineeinsteen.fun.options.UtilityTemplate) renderer).setDashboardRow(row);
+            } else if (renderer instanceof com.aldrineeinsteen.fun.options.PluginTemplate) {
+                ((com.aldrineeinsteen.fun.options.PluginTemplate) renderer).setDashboardRow(row);
+            }
+            logger.debug("Set dashboard row={} for plugin: {}", row, pluginClassName);
         }
     }
 }

@@ -3,6 +3,7 @@ package com.aldrineeinsteen.fun.options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -11,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Base template for all plugins with lifecycle management support.
  * Provides singleton pattern implementation and plugin lifecycle hooks.
  */
-public abstract class PluginTemplate {
+public abstract class PluginTemplate implements DashboardRenderer {
     // Thread-safe singleton instance registry
     private static final Map<Class<? extends PluginTemplate>, PluginTemplate> instances = new ConcurrentHashMap<>();
     
@@ -25,6 +26,12 @@ public abstract class PluginTemplate {
     // Plugin metadata
     private String pluginName;
     private String pluginVersion;
+    
+    // Dashboard configuration
+    private boolean dashboardEnabled = false;
+    private int dashboardPosition = 100;
+    private int dashboardColumn = 1;
+    private int dashboardRow = 1;
 
     public static synchronized <T extends PluginTemplate> T getInstance(Class<T> clazz) {
         if (!instances.containsKey(clazz)) {
@@ -149,6 +156,68 @@ public abstract class PluginTemplate {
 
     protected void setPluginName(String name) {
         this.pluginName = name;
+    }
+    
+    /**
+     * Enable or disable dashboard rendering for this plugin
+     */
+    public void setDashboardEnabled(boolean enabled) {
+        this.dashboardEnabled = enabled;
+    }
+    
+    /**
+     * Set the dashboard display position
+     */
+    public void setDashboardPosition(int position) {
+        this.dashboardPosition = position;
+    }
+    
+    /**
+     * Set the dashboard column for grid layout
+     */
+    public void setDashboardColumn(int column) {
+        this.dashboardColumn = column;
+    }
+    
+    /**
+     * Set the dashboard row for grid layout
+     */
+    public void setDashboardRow(int row) {
+        this.dashboardRow = row;
+    }
+    
+    @Override
+    public boolean isDashboardEnabled() {
+        return dashboardEnabled;
+    }
+    
+    @Override
+    public int getDashboardPosition() {
+        return dashboardPosition;
+    }
+    
+    @Override
+    public int getDashboardColumn() {
+        return dashboardColumn;
+    }
+    
+    @Override
+    public int getDashboardRow() {
+        return dashboardRow;
+    }
+    
+    @Override
+    public String getDashboardPluginName() {
+        return getPluginName();
+    }
+    
+    /**
+     * Default implementation returns empty map.
+     * Subclasses should override to provide actual dashboard data.
+     */
+    @Override
+    public Map<String, String> getDashboardData() {
+        return new HashMap<>();
     }
 
     protected PluginTemplate() {
