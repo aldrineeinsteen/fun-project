@@ -77,22 +77,32 @@ goto check_jar_and_run
 
 :run_application
 echo Running fun-project.jar
-java -cp "%libFolder%;%pluginFolder%;%jarfile%" com.aldrineeinsteen.fun.Main %signature% %keep_alive% %dashboard% %end_time%
+echo [%date% %time%] Starting application with args: %signature% %keep_alive% %dashboard% %end_time% >> runtime.log
+java -cp "%libFolder%;%pluginFolder%;%jarfile%" com.aldrineeinsteen.fun.Main %signature% %keep_alive% %dashboard% %end_time% 2>&1 | tee -a runtime.log
+if %errorlevel% neq 0 (
+    echo [%date% %time%] Application exited with error code: %errorlevel% >> runtime.log
+)
 goto :eof
 
 :build_locally
 echo Building project locally with Maven...
-call mvnw.cmd clean install
+echo [%date% %time%] Building project locally with Maven >> runtime.log
+call mvnw.cmd clean install 2>&1 | tee -a runtime.log
 if exist "%jarfile%" (
+    if %errorlevel% neq 0 (
+        echo [%date% %time%] Build completed with warnings (exit code: %errorlevel%) >> runtime.log
+    )
     call :run_application
 ) else (
     echo Error: Failed to build jar file locally
+    echo [%date% %time%] ERROR: Failed to build jar file locally >> runtime.log
     exit /b 1
 )
 goto :eof
 
 :download_from_github_releases
 echo Attempting to download latest release from GitHub Releases...
+echo [%date% %time%] Attempting to download from GitHub Releases >> runtime.log
 
 REM Create target directories
 if not exist "target" mkdir target
@@ -106,6 +116,7 @@ REM Check if curl is available
 curl --version >nul 2>&1
 if %errorlevel% neq 0 (
     echo curl is required but not installed. Falling back to local build.
+    echo [%date% %time%] ERROR: curl not found, falling back to local build >> runtime.log
     call :build_locally
     goto :eof
 )
@@ -113,12 +124,13 @@ if %errorlevel% neq 0 (
 echo Fetching latest release information...
 
 REM Get the latest release information and extract download URL
-curl -s "https://api.github.com/repos/%REPO%/releases/latest" > temp_release.json
+curl -s "https://api.github.com/repos/%REPO%/releases/latest" > temp_release.json 2>> runtime.log
 
 REM Extract the download URL for distribution zip (simplified approach for Windows)
 findstr /C:"fun-project-distribution.zip" temp_release.json > temp_url.txt
 if %errorlevel% neq 0 (
     echo Distribution package not found in latest release. Falling back to local build.
+    echo [%date% %time%] WARNING: Distribution package not found, falling back to local build >> runtime.log
     del temp_release.json 2>nul
     call :build_locally
     goto :eof
@@ -137,26 +149,31 @@ del temp_url.txt 2>nul
 
 if "%DOWNLOAD_URL%"=="" (
     echo Could not extract download URL. Falling back to local build.
+    echo [%date% %time%] ERROR: Could not extract download URL, falling back to local build >> runtime.log
     call :build_locally
     goto :eof
 )
 
 echo Downloading distribution package from: %DOWNLOAD_URL%
+echo [%date% %time%] Downloading from: %DOWNLOAD_URL% >> runtime.log
 
 REM Download the distribution package
-curl -L -o target\fun-project-distribution.zip "%DOWNLOAD_URL%"
+curl -L -o target\fun-project-distribution.zip "%DOWNLOAD_URL%" 2>> runtime.log
 if %errorlevel% neq 0 (
     echo Failed to download from GitHub Releases. Falling back to local build.
+    echo [%date% %time%] ERROR: Download failed, falling back to local build >> runtime.log
     call :build_locally
     goto :eof
 )
 
 echo Download successful. Extracting...
+echo [%date% %time%] Download successful, extracting... >> runtime.log
 
 REM Extract the distribution (Windows has built-in zip support via PowerShell)
-powershell -command "Expand-Archive -Path 'target\fun-project-distribution.zip' -DestinationPath 'target' -Force"
+powershell -command "Expand-Archive -Path 'target\fun-project-distribution.zip' -DestinationPath 'target' -Force" 2>> runtime.log
 if %errorlevel% neq 0 (
     echo Failed to extract package. Falling back to local build.
+    echo [%date% %time%] ERROR: Extraction failed, falling back to local build >> runtime.log
     call :build_locally
     goto :eof
 )
@@ -166,9 +183,11 @@ del target\fun-project-distribution.zip 2>nul
 REM Verify the main jar exists
 if exist "%jarfile%" (
     echo Successfully downloaded and extracted from GitHub Releases
+    echo [%date% %time%] Successfully extracted from GitHub Releases >> runtime.log
     call :run_application
 ) else (
     echo Main jar not found in downloaded package. Falling back to local build.
+    echo [%date% %time%] ERROR: Main jar not found after extraction, falling back to local build >> runtime.log
     call :build_locally
 )
 goto :eof
@@ -178,13 +197,19 @@ REM Get current branch
 for /f %%i in ('git branch --show-current 2^>nul') do set "current_branch=%%i"
 if "%current_branch%"=="" set "current_branch=unknown"
 
+echo [%date% %time%] ========== Fun Project Startup ========== >> runtime.log
+echo [%date% %time%] Current branch: %current_branch% >> runtime.log
+
 if exist "%jarfile%" (
     echo Found existing jar file
+    echo [%date% %time%] Found existing jar file >> runtime.log
     call :run_application
 ) else if "%current_branch%"=="main" (
     echo On main branch - attempting to use GitHub Releases
+    echo [%date% %time%] On main branch - attempting GitHub Releases >> runtime.log
     call :download_from_github_releases
 ) else (
     echo On development branch (%current_branch%^) - building locally
+    echo [%date% %time%] On development branch (%current_branch%) - building locally >> runtime.log
     call :build_locally
 )
