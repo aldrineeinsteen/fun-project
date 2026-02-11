@@ -4,7 +4,7 @@
 
     <groupId>com.aldrineeinsteen</groupId>
     <artifactId>fun-project</artifactId>
-    <version>1.2.46</version>
+    <version>1.2.47-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>fun-core</module>
@@ -279,7 +279,8 @@
                 <version>3.5.1</version>
                 <configuration>
                     <!-- Use @{argLine} to preserve JaCoCo's agent configuration -->
-                    <argLine>@{argLine} -javaagent:${settings.localRepository}/org/mockito/mockito-core/5.14.2/mockito-core-5.14.2.jar</argLine>
+                    <!-- Add experimental flag for ByteBuddy to support Java 25 -->
+                    <argLine>@{argLine} -Dnet.bytebuddy.experimental=true -javaagent:${settings.localRepository}/org/mockito/mockito-core/5.14.2/mockito-core-5.14.2.jar</argLine>
                 </configuration>
             </plugin>
         </plugins>
