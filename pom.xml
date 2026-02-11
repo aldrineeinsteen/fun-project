@@ -4,7 +4,7 @@
 
     <groupId>com.aldrineeinsteen</groupId>
     <artifactId>fun-project</artifactId>
-    <version>1.2.47-SNAPSHOT</version>
+    <version>1.2.47</version>
     <packaging>pom</packaging>
     <modules>
         <module>fun-core</module>
@@ -117,7 +117,7 @@
         <url>https://github.com/aldrineeinsteen/fun-project</url>
         <connection>scm:git:https://github.com/aldrineeinsteen/fun-project.git</connection>
         <developerConnection>scm:git:https://github.com/aldrineeinsteen/fun-project.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>fun-project-1.2.47</tag>
     </scm>
 
     <distributionManagement>
