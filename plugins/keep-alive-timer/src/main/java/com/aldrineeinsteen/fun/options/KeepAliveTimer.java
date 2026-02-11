@@ -27,6 +27,10 @@ public class KeepAliveTimer extends UtilityTemplate {
     
     private final MonitorManager monitorManager;
     private final MousePositionTracker positionTracker;
+    
+    // Track running state
+    private volatile boolean isRunning = false;
+    private volatile boolean shouldRestart = true;
 
     public KeepAliveTimer() throws AWTException {
         this(DEFAULT_DELAY_MILLISECONDS, LocalTime.parse("18:30"));
@@ -62,6 +66,27 @@ public class KeepAliveTimer extends UtilityTemplate {
             return;
         }
 
+        // Main loop with restart capability
+        while (shouldRestart) {
+            startTimerCycle();
+            
+            // If we should restart, wait a bit before restarting
+            if (shouldRestart) {
+                logger.info("Timer completed. Restarting in 5 seconds...");
+                isRunning = false;
+                robot.delay(5000);
+            }
+        }
+        
+        isRunning = false;
+    }
+    
+    /**
+     * Run a single timer cycle from now until end time
+     */
+    private void startTimerCycle() {
+        isRunning = true;
+        
         // Force a refresh of monitor list at startup
         monitorManager.refreshMonitorList();
         
@@ -71,9 +96,13 @@ public class KeepAliveTimer extends UtilityTemplate {
                 currentDisplay.getHeight(),
                 currentDisplay.getDevice().getIDstring());
 
-        while (LocalTime.now().isBefore(endTime)) {
+        while (LocalTime.now().isBefore(endTime) && shouldRestart) {
             robot.delay(delayMilliseconds);
             processMouseMovement();
+        }
+        
+        if (LocalTime.now().isAfter(endTime) || LocalTime.now().equals(endTime)) {
+            logger.info("Keep-alive timer reached end time: {}", endTime);
         }
     }
 
@@ -168,20 +197,46 @@ public class KeepAliveTimer extends UtilityTemplate {
         
         data.put("End Time", endTime.format(DateTimeFormatter.ofPattern("HH:mm")));
         data.put("Delay", String.format("%ds", delayMilliseconds / 1000));
-        data.put("Status", "\u001B[32m✓ Active\u001B[0m");
+        
+        // Show actual running status
+        LocalTime now = LocalTime.now();
+        if (isRunning && now.isBefore(endTime)) {
+            data.put("Status", "\u001B[32m✓ Active\u001B[0m");
+        } else if (!isRunning && now.isAfter(endTime)) {
+            data.put("Status", "\u001B[33m⟳ Waiting to restart\u001B[0m");
+        } else if (!isRunning) {
+            data.put("Status", "\u001B[31m✗ Stopped\u001B[0m");
+        } else {
+            data.put("Status", "\u001B[32m✓ Active\u001B[0m");
+        }
         
         // Show time remaining
-        LocalTime now = LocalTime.now();
         if (now.isBefore(endTime)) {
             long secondsRemaining = java.time.Duration.between(now, endTime).getSeconds();
             long hours = secondsRemaining / 3600;
             long minutes = (secondsRemaining % 3600) / 60;
             data.put("Time Remaining", String.format("%dh %dm", hours, minutes));
         } else {
-            data.put("Time Remaining", "Completed");
+            data.put("Time Remaining", "Completed - Restarting...");
         }
         
         return data;
+    }
+    
+    /**
+     * Stop the timer and prevent restart
+     */
+    public void stopTimer() {
+        shouldRestart = false;
+        isRunning = false;
+        logger.info("Keep-alive timer stopped");
+    }
+    
+    /**
+     * Check if the timer is currently running
+     */
+    public boolean isRunning() {
+        return isRunning;
     }
 
     // Getters for testing

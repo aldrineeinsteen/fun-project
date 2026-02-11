@@ -15,7 +15,7 @@ public class KeepAliveTimerDashboardTest {
         LocalTime futureTime = LocalTime.now().plusHours(2);
         KeepAliveTimer timer = new KeepAliveTimer(30000, futureTime);
         
-        // Get dashboard data
+        // Get dashboard data when timer is not running
         Map<String, String> data = timer.getDashboardData();
         
         // Verify data is not null and not empty
@@ -28,10 +28,10 @@ public class KeepAliveTimerDashboardTest {
         assertTrue(data.containsKey("Delay"), "Should contain Delay");
         assertTrue(data.containsKey("Status"), "Should contain Status");
         
-        // Verify some values - Status contains ANSI color codes
-        assertTrue(data.get("Status").contains("Active"), "Status should contain 'Active'");
+        // Verify status shows Stopped when timer is not running
+        assertTrue(data.get("Status").contains("Stopped"), "Status should contain 'Stopped' when not running");
         
-        System.out.println("Dashboard Data:");
+        System.out.println("Dashboard Data (Not Running):");
         data.forEach((key, value) -> System.out.println("  " + key + ": " + value));
     }
     
