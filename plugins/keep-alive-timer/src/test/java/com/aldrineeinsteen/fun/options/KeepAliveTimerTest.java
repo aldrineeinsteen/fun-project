@@ -213,8 +213,15 @@ public class KeepAliveTimerTest {
         Assumptions.assumeFalse(GraphicsEnvironment.isHeadless(),
             "Test skipped in headless environment - KeepAliveTimer requires display access");
             
-        // Set end time to 1 hour ago
-        LocalTime pastEndTime = LocalTime.now().minusHours(1);
+        // Pick a deterministic past/equal time in the same day to avoid midnight wrap ambiguity.
+        LocalTime now = LocalTime.now();
+        LocalTime pastEndTime;
+        if (now.getHour() == 0) {
+            // At midnight hour, using current hour keeps this <= now and avoids wrapping to previous day.
+            pastEndTime = LocalTime.of(0, now.getMinute());
+        } else {
+            pastEndTime = LocalTime.of(now.getHour() - 1, now.getMinute());
+        }
         KeepAliveTimer timer = new KeepAliveTimer(30000, pastEndTime);
         
         Map<String, String> data = timer.getDashboardData();
