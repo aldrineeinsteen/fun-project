@@ -8,7 +8,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.awt.*;
-import java.lang.reflect.Field;
 import java.time.LocalTime;
 import java.util.Map;
 
@@ -49,9 +48,6 @@ public class KeepAliveTimerTest {
         Assumptions.assumeFalse(GraphicsEnvironment.isHeadless(),
             "Test skipped in headless environment - KeepAliveTimer requires display access");
             
-        // Create a mock KeepAliveTimer with our mocked components
-        KeepAliveTimer mockKeepAliveTimer = Mockito.mock(KeepAliveTimer.class);
-        
         // Create a test DisplayModeWrapper
         DisplayModeWrapper testWrapper = new DisplayModeWrapper(realDisplayMode, mockGraphicsDevice);
         
@@ -225,6 +221,52 @@ public class KeepAliveTimerTest {
         
         assertNotNull(data);
         assertEquals("Completed - Restarting...", data.get("Time Remaining"));
+    }
+
+    @Test
+    public void testSetEndTimeFromStringSupportsHHmmAndHHColon() throws Exception {
+        Assumptions.assumeFalse(GraphicsEnvironment.isHeadless(),
+            "Test skipped in headless environment - KeepAliveTimer requires display access");
+
+        KeepAliveTimer timer = new KeepAliveTimer(30000, LocalTime.of(18, 30));
+
+        timer.setEndTimeFromString("23:59");
+        Map<String, String> dataColon = timer.getDashboardData();
+        assertEquals("23:59", dataColon.get("End Time"));
+
+        timer.setEndTimeFromString("0005");
+        Map<String, String> dataCompact = timer.getDashboardData();
+        assertEquals("00:05", dataCompact.get("End Time"));
+    }
+
+    @Test
+    public void testSetEndTimeFromStringInvalidKeepsPreviousValue() throws Exception {
+        Assumptions.assumeFalse(GraphicsEnvironment.isHeadless(),
+            "Test skipped in headless environment - KeepAliveTimer requires display access");
+
+        KeepAliveTimer timer = new KeepAliveTimer(30000, LocalTime.of(18, 30));
+        timer.setEndTimeFromString("23:10");
+        assertEquals("23:10", timer.getDashboardData().get("End Time"));
+
+        timer.setEndTimeFromString("bad-input");
+        assertEquals("23:10", timer.getDashboardData().get("End Time"));
+    }
+
+    @Test
+    public void testSetDelaySecondsFromStringValidAndInvalid() throws Exception {
+        Assumptions.assumeFalse(GraphicsEnvironment.isHeadless(),
+            "Test skipped in headless environment - KeepAliveTimer requires display access");
+
+        KeepAliveTimer timer = new KeepAliveTimer(30000, LocalTime.now().plusHours(1));
+
+        timer.setDelaySecondsFromString("45");
+        assertEquals("45s", timer.getDashboardData().get("Delay"));
+
+        timer.setDelaySecondsFromString("0");
+        assertEquals("45s", timer.getDashboardData().get("Delay"));
+
+        timer.setDelaySecondsFromString("oops");
+        assertEquals("45s", timer.getDashboardData().get("Delay"));
     }
     
     @Test

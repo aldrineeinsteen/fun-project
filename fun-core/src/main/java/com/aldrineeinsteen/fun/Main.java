@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 public class Main {
 
@@ -106,6 +107,7 @@ public class Main {
             // Start utilities
             Runnable utility = PluginRepository.getUtility(pluginName);
             if (utility != null) {
+                applyUtilityRuntimeParameters(pluginName, utility, cmd);
                 new Thread(utility).start();
             }
             
@@ -135,6 +137,34 @@ public class Main {
         // Add more plugin checks here as needed
         
         return false;
+    }
+
+    /**
+     * Applies runtime CLI parameters to utilities that expose compatible setter methods.
+     */
+    private static void applyUtilityRuntimeParameters(String pluginName, Runnable utility, CommandLine cmd) {
+        // KeepAliveTimer params from plugin.yaml: -e/--end-time and -sec/--seconds
+        if (pluginName.contains("KeepAliveTimer")) {
+            applyStringSetterIfPresent(utility, "setEndTimeFromString", cmd.getOptionValue("e"));
+            applyStringSetterIfPresent(utility, "setDelaySecondsFromString", cmd.getOptionValue("sec"));
+        }
+    }
+
+    private static void applyStringSetterIfPresent(Object target, String methodName, String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return;
+        }
+
+        try {
+            Method method = target.getClass().getMethod(methodName, String.class);
+            method.invoke(target, value);
+            logger.info("Applied runtime option via {}({})", methodName, value);
+        } catch (NoSuchMethodException e) {
+            logger.debug("Method {} not available on {}", methodName, target.getClass().getName());
+        } catch (Exception e) {
+            logger.warn("Failed applying runtime option {}({}) on {}", methodName, value,
+                    target.getClass().getName(), e);
+        }
     }
 }
 

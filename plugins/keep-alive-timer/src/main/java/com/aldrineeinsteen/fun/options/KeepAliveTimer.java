@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -46,6 +47,72 @@ public class KeepAliveTimer extends UtilityTemplate {
         this.robot = new Robot();
         this.monitorManager = new MonitorManager();
         this.positionTracker = new MousePositionTracker();
+    }
+
+    /**
+     * Updates end time from CLI input. Supports HH:mm and HHmm formats.
+     */
+    public synchronized void setEndTimeFromString(String rawEndTime) {
+        if (rawEndTime == null || rawEndTime.trim().isEmpty()) {
+            logger.warn("Ignoring empty end-time value");
+            return;
+        }
+
+        String candidate = rawEndTime.trim();
+        try {
+            LocalTime parsed = parseEndTime(candidate);
+            this.endTime = parsed;
+            logger.info("Updated keep-alive end time to {} from input '{}'", parsed, rawEndTime);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid end-time '{}': {}. Keeping existing end time {}", rawEndTime, e.getMessage(), endTime);
+        }
+    }
+
+    /**
+     * Updates delay in seconds from CLI input.
+     */
+    public synchronized void setDelaySecondsFromString(String rawSeconds) {
+        if (rawSeconds == null || rawSeconds.trim().isEmpty()) {
+            logger.warn("Ignoring empty seconds value");
+            return;
+        }
+
+        String candidate = rawSeconds.trim();
+        try {
+            int seconds = Integer.parseInt(candidate);
+            if (seconds <= 0) {
+                throw new IllegalArgumentException("value must be a positive integer");
+            }
+
+            this.delayMilliseconds = seconds * 1000;
+            logger.info("Updated keep-alive delay to {} second(s)", seconds);
+        } catch (NumberFormatException e) {
+            logger.warn("Invalid seconds '{}': must be a number. Keeping existing delay {}ms", rawSeconds, delayMilliseconds);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid seconds '{}': {}. Keeping existing delay {}ms", rawSeconds, e.getMessage(), delayMilliseconds);
+        }
+    }
+
+    private LocalTime parseEndTime(String value) {
+        if (value.contains(":")) {
+            try {
+                return LocalTime.parse(value, DateTimeFormatter.ofPattern("H:mm"));
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException("expected HH:mm format");
+            }
+        }
+
+        // Support HHmm format (e.g. 2359)
+        if (value.matches("\\d{4}")) {
+            String normalized = value.substring(0, 2) + ":" + value.substring(2);
+            try {
+                return LocalTime.parse(normalized, DateTimeFormatter.ofPattern("HH:mm"));
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException("expected valid HHmm time");
+            }
+        }
+
+        throw new IllegalArgumentException("expected HH:mm or HHmm format");
     }
 
     public static synchronized KeepAliveTimer getInstance() {
