@@ -200,10 +200,9 @@ public class KeepAliveTimer extends UtilityTemplate {
         
         // Show actual running status
         LocalTime now = LocalTime.now();
-        if (isRunning && now.isBefore(endTime)) {
+        long secondsUntilEnd = getSecondsUntilEnd(now, endTime);
+        if (isRunning && secondsUntilEnd > 0) {
             data.put("Status", "\u001B[32m✓ Active\u001B[0m");
-        } else if (!isRunning && now.isAfter(endTime)) {
-            data.put("Status", "\u001B[33m⟳ Waiting to restart\u001B[0m");
         } else if (!isRunning) {
             data.put("Status", "\u001B[31m✗ Stopped\u001B[0m");
         } else {
@@ -211,16 +210,29 @@ public class KeepAliveTimer extends UtilityTemplate {
         }
         
         // Show time remaining
-        if (now.isBefore(endTime)) {
-            long secondsRemaining = java.time.Duration.between(now, endTime).getSeconds();
-            long hours = secondsRemaining / 3600;
-            long minutes = (secondsRemaining % 3600) / 60;
+        if (secondsUntilEnd > 0) {
+            long hours = secondsUntilEnd / 3600;
+            long minutes = (secondsUntilEnd % 3600) / 60;
             data.put("Time Remaining", String.format("%dh %dm", hours, minutes));
         } else {
             data.put("Time Remaining", "Completed - Restarting...");
         }
         
         return data;
+    }
+
+    /**
+     * Returns signed seconds until end time. For large negative deltas, treat end time as next-day.
+     */
+    private long getSecondsUntilEnd(LocalTime now, LocalTime configuredEndTime) {
+        long seconds = java.time.Duration.between(now, configuredEndTime).getSeconds();
+
+        // If end time looks nearly a full day behind, it is likely intended for the next day.
+        if (seconds < 0 && Math.abs(seconds) > 12 * 60 * 60) {
+            return seconds + (24 * 60 * 60);
+        }
+
+        return seconds;
     }
     
     /**

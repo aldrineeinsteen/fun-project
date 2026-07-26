@@ -78,21 +78,36 @@ goto check_jar_and_run
 :run_application
 echo Running fun-project.jar
 echo [%date% %time%] Starting application with args: %signature% %keep_alive% %dashboard% %end_time% >> runtime.log
-java -cp "%libFolder%;%pluginFolder%;%jarfile%" com.aldrineeinsteen.fun.Main %signature% %keep_alive% %dashboard% %end_time% 2>&1 | tee -a runtime.log
-if %errorlevel% neq 0 (
-    echo [%date% %time%] Application exited with error code: %errorlevel% >> runtime.log
+set "app_output_file=%temp%\fun-project-app-%random%.log"
+java -cp "%libFolder%;%pluginFolder%;%jarfile%" com.aldrineeinsteen.fun.Main %signature% %keep_alive% %dashboard% %end_time% > "%app_output_file%" 2>&1
+set "app_exit_code=%errorlevel%"
+type "%app_output_file%"
+type "%app_output_file%" >> runtime.log
+del "%app_output_file%" 2>nul
+if not "%app_exit_code%"=="0" (
+    echo [%date% %time%] Application exited with error code: %app_exit_code% >> runtime.log
 )
-goto :eof
+exit /b %app_exit_code%
 
 :build_locally
 echo Building project locally with Maven...
 echo [%date% %time%] Building project locally with Maven >> runtime.log
-call mvnw.cmd clean install 2>&1 | tee -a runtime.log
+set "build_output_file=%temp%\fun-project-build-%random%.log"
+call mvnw.cmd clean install > "%build_output_file%" 2>&1
+set "build_exit_code=%errorlevel%"
+type "%build_output_file%"
+type "%build_output_file%" >> runtime.log
+del "%build_output_file%" 2>nul
+
+if not "%build_exit_code%"=="0" (
+    echo Error: Build failed with exit code: %build_exit_code%
+    echo [%date% %time%] ERROR: Build failed with exit code: %build_exit_code% >> runtime.log
+    exit /b %build_exit_code%
+)
+
 if exist "%jarfile%" (
-    if %errorlevel% neq 0 (
-        echo [%date% %time%] Build completed with warnings (exit code: %errorlevel%) >> runtime.log
-    )
     call :run_application
+    exit /b %errorlevel%
 ) else (
     echo Error: Failed to build jar file locally
     echo [%date% %time%] ERROR: Failed to build jar file locally >> runtime.log

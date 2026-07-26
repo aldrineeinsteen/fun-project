@@ -66,10 +66,13 @@ build_locally() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Building project locally with Maven" >> runtime.log
     ./mvnw clean install 2>&1 | tee -a runtime.log
     build_exit_code=${PIPESTATUS[0]}
+    if [ $build_exit_code -ne 0 ]; then
+        echo "Error: Build failed with exit code: $build_exit_code"
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: Build failed with exit code: $build_exit_code" >> runtime.log
+        exit $build_exit_code
+    fi
+
     if [[ -f "$jarfile" ]]; then
-        if [ $build_exit_code -ne 0 ]; then
-            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Build completed with warnings (exit code: $build_exit_code)" >> runtime.log
-        fi
         run_application
     else
         echo "Error: Failed to build jar file locally"
